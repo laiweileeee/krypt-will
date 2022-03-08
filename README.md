@@ -6,7 +6,7 @@ This project is built using [react-moralis](https://github.com/MoralisWeb3/react
 
 Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
 
-### Contracts 
+### Contracts (Stored in './Truffle/contracts'
 - Will.sol - handles will contract functionalities
 - WillFactory.sol - handles creating clones of Will contracts
 - CloneFactory.sol - base code used for WillFactory.sol
