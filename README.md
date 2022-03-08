@@ -24,13 +24,13 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 Clone `KryptWill`:
 
 ```sh
-git clone https://github.com/ethereum-boilerplate/ethereum-boilerplate.git
+git clone https://github.com/laiweileeee/kryptwill.git
 ```
 
 Install all dependencies:
 
 ```sh
-cd ethereum-boilerplate
+cd kryptwill
 yarn install
 ```
 
