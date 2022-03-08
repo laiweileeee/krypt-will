@@ -2,7 +2,7 @@
 
 Immutable & Trusted Digital Will Platform
 
-This project is build using [react-moralis](https://github.com/MoralisWeb3/react-moralis) and [Moralis](https://moralis.io?utm_source=github&utm_medium=readme&utm_campaign=ethereum-boilerplate). 
+This project is built using [react-moralis](https://github.com/MoralisWeb3/react-moralis) and [Moralis](https://moralis.io?utm_source=github&utm_medium=readme&utm_campaign=ethereum-boilerplate). 
 
 Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
 
@@ -14,10 +14,10 @@ AssetNFT.sol - handles asset NFT functionality
 
 
 ### Front-End Pages
-- [] Create Will Page - For will owners to create will
-- [] View Will Page - For will owners to view their will
+- [ ] Create Will Page - For will owners to create will
+- [ ] View Will Page - For will owners to view their will
 - [x] Mint Page - For Gov to mint NFTs to will owners
-- [] Simulate Death Path - For Gov to simulate will owners' death and execute will
+- [ ] Simulate Death Path - For Gov to simulate will owners' death and execute will
 
 # How to start
 
