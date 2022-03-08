@@ -10,7 +10,7 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 - [ ] Will.sol - handles will contract functionalities (some functions not done)
 - [x] WillFactory.sol - handles creating clones of Will contracts
 - [x] CloneFactory.sol - base code used for WillFactory.sol
-- [x]AssetNFT.sol - handles asset NFT functionality
+- [x] AssetNFT.sol - handles asset NFT functionality
 
 
 ### Front-End Pages
