@@ -23,6 +23,9 @@ import Contract from "components/Contract/Contract";
 import Text from "antd/lib/typography/Text";
 import Ramper from "components/Ramper";
 import MenuItems from "./components/MenuItems";
+import CreateWill from "./components/CreateWill";
+import ViewWill from "./components/ViewWill";
+import Mint from "./components/Mint";
 const { Header, Footer } = Layout;
 
 const styles = {
@@ -87,11 +90,29 @@ const App = ({ isServerInfo }) => {
 
         <div style={styles.content}>
           <Switch>
-            <Route exact path="/quickstart">
-              <QuickStart isServerInfo={isServerInfo} />
-            </Route>
+            {/*Used paths */}
             <Route path="/wallet">
               <Wallet />
+            </Route>
+            <Route path="/create">
+              <CreateWill />
+            </Route>
+            <Route path="/view">
+              <ViewWill />
+            </Route>
+            <Route path="/mint">
+              <Mint />
+            </Route>
+            <Route path="/simulate">
+              <Wallet />
+            </Route>
+            <Route path="/nftBalance">
+              <NFTBalance />
+            </Route>
+
+            {/* Unused paths */}
+            <Route exact path="/quickstart">
+              <QuickStart isServerInfo={isServerInfo} />
             </Route>
             <Route path="/1inch">
               <Tabs defaultActiveKey="1" style={{ alignItems: "center" }}>
@@ -115,14 +136,14 @@ const App = ({ isServerInfo }) => {
             <Route path="/erc20transfers">
               <ERC20Transfers />
             </Route>
-            <Route path="/nftBalance">
-              <NFTBalance />
-            </Route>
+
             <Route path="/contract">
               <Contract />
             </Route>
+
+            {/* Fallback paths */}
             <Route path="/">
-              <Redirect to="/quickstart" />
+              <Redirect to="/create" />
             </Route>
             <Route path="/ethereum-boilerplate">
               <Redirect to="/quickstart" />
@@ -135,30 +156,7 @@ const App = ({ isServerInfo }) => {
       </Router>
       <Footer style={{ textAlign: "center" }}>
         <Text style={{ display: "block" }}>
-          ⭐️ Please star this{" "}
-          <a
-            href="https://github.com/ethereum-boilerplate/ethereum-boilerplate/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            boilerplate
-          </a>
-          , every star makes us very happy!
-        </Text>
-
-        <Text style={{ display: "block" }}>
-          🙋 You have questions? Ask them on the {""}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            href="https://forum.moralis.io/t/ethereum-boilerplate-questions/3951/29"
-          >
-            Moralis forum
-          </a>
-        </Text>
-
-        <Text style={{ display: "block" }}>
-          📖 Read more about{" "}
+          📖 Built using{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
