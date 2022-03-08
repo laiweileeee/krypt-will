@@ -1,8 +1,6 @@
 # `KryptWill`
 
-> React components and hooks for fast building dApps without running own backend
-
-🚀DEMO: https://ethereum-boilerplate.github.io/ethereum-boilerplate
+Immutable & Trusted Digital Will Platform
 
 This project is build using [react-moralis](https://github.com/MoralisWeb3/react-moralis) and [Moralis](https://moralis.io?utm_source=github&utm_medium=readme&utm_campaign=ethereum-boilerplate). 
 
@@ -12,13 +10,13 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 
 # How to start
 
-📄 Clone `KryptWill`:
+Clone `KryptWill`:
 
 ```sh
 git clone https://github.com/ethereum-boilerplate/ethereum-boilerplate.git
 ```
 
-💿 Install all dependencies:
+Install all dependencies:
 
 ```sh
 cd ethereum-boilerplate
@@ -33,10 +31,9 @@ REACT_APP_MORALIS_APPLICATION_ID = xxxxxxxxxxxx
 REACT_APP_MORALIS_SERVER_URL = https://xxxxxx.grandmoralis.com:2053/server
 ```
 
-🚴‍♂️ Run your App:
+Run your App:
 
 ```sh
 yarn start
 ```
 
-### Where to host your dApp?
