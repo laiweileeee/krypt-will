@@ -6,7 +6,18 @@ This project is build using [react-moralis](https://github.com/MoralisWeb3/react
 
 Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
 
-![daPPdemo](https://user-images.githubusercontent.com/78314301/147088732-e8bbd451-9351-4338-879c-b1535f4df319.gif)
+# Contracts 
+Will.sol - handles will contract functionalities
+WillFactory.sol - handles creating clones of Will contracts
+CloneFactory.sol - base code used for WillFactory.sol
+AssetNFT.sol - handles asset NFT functionality
+
+
+# Front-End Pages
+[] Create Will Page - For will owners to create will
+[] View Will Page - For will owners to view their will
+[] Mint Page - For Gov to mint NFTs to will owners
+[] Simulate Death Path - For Gov to simulate will owners' death and execute will
 
 # How to start
 
