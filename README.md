@@ -6,18 +6,18 @@ This project is build using [react-moralis](https://github.com/MoralisWeb3/react
 
 Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
 
-# Contracts 
+### Contracts 
 Will.sol - handles will contract functionalities
 WillFactory.sol - handles creating clones of Will contracts
 CloneFactory.sol - base code used for WillFactory.sol
 AssetNFT.sol - handles asset NFT functionality
 
 
-# Front-End Pages
-[] Create Will Page - For will owners to create will
-[] View Will Page - For will owners to view their will
-[] Mint Page - For Gov to mint NFTs to will owners
-[] Simulate Death Path - For Gov to simulate will owners' death and execute will
+### Front-End Pages
+- [] Create Will Page - For will owners to create will
+- [] View Will Page - For will owners to view their will
+- [x] Mint Page - For Gov to mint NFTs to will owners
+- [] Simulate Death Path - For Gov to simulate will owners' death and execute will
 
 # How to start
 
@@ -34,7 +34,7 @@ cd ethereum-boilerplate
 yarn install
 ```
 
-✏ Rename `.env.example` to `.env` in the main folder and provide your `appId` and `serverUrl` from Moralis ([How to start Moralis Server](https://docs.moralis.io/moralis-server/getting-started/create-a-moralis-server))
+Rename `.env.example` to `.env` in the main folder and provide your `appId` and `serverUrl` from Moralis ([How to start Moralis Server](https://docs.moralis.io/moralis-server/getting-started/create-a-moralis-server))
 Example:
 
 ```jsx
