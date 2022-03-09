@@ -6,10 +6,11 @@ This project is built using [react-moralis](https://github.com/MoralisWeb3/react
 
 Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
 
-### Architecture
+## Architecture
 ![Architecture](https://github.com/laiweileeee/kryptwill/blob/main/Overview.png)
 
-### Contracts (Stored in './Truffle/contracts')
+
+## Contracts (Stored in './Truffle/contracts')
 - [ ] Will.sol - handles will contract functionalities (some functions not done)
 - [x] WillFactory.sol - handles creating clones of Will contracts
       - https://betterprogramming.pub/learn-solidity-the-factory-pattern-75d11c3e7d29
@@ -21,7 +22,8 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 
 ![alt text](https://github.com/laiweileeee/kryptwill/blob/main/Contracts.png)
 
-### Front-End Pages
+
+## Front-End Pages
 - [ ] Create Will Page - For will owners to create will
 - [ ] View Will Page - For will owners to view their will
 - [x] Mint Page - For Gov to mint NFTs to will owners
