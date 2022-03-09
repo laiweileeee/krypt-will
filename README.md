@@ -19,6 +19,8 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 - [x] Mint Page - For Gov to mint NFTs to will owners
 - [ ] Simulate Death Page - For Gov to simulate will owners' death and execute will
 
+Note: I'm not sure how complex it should be but these are the base functionality needed, can extend more after 
+
 # How to start
 
 Clone `KryptWill`:
