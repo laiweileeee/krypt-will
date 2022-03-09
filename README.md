@@ -19,7 +19,7 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
       - From https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol   
       - Read more https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Enumerable
 
-![alt text](https://drive.google.com/file/d/1nPXlVVEV9njTGsBvykaaXMRZv2nPnnyT/view?usp=sharing)
+![alt text](https://github.com/laiweileeee/kryptwill/blob/main/Contracts.png)
 
 ### Front-End Pages
 - [ ] Create Will Page - For will owners to create will
