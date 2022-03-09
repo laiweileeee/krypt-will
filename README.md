@@ -13,12 +13,12 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 ## Contracts (Stored in './Truffle/contracts')
 - [ ] Will.sol - handles will contract functionalities (some functions not done)
 - [x] WillFactory.sol - handles creating clones of Will contracts
-      - https://betterprogramming.pub/learn-solidity-the-factory-pattern-75d11c3e7d29
+- https://betterprogramming.pub/learn-solidity-the-factory-pattern-75d11c3e7d29
 - [x] CloneFactory.sol - base code used for WillFactory.sol
-      - From https://github.com/optionality/clone-factory/blob/master/contracts/CloneFactory.sol
+- From https://github.com/optionality/clone-factory/blob/master/contracts/CloneFactory.sol
 - [x] AssetNFT.sol - handles asset NFT functionality
-      - From https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol   
-      - Read more https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Enumerable
+- From https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol   
+- Read more https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Enumerable
 
 ![alt text](https://github.com/laiweileeee/kryptwill/blob/main/Contracts.png)
 
