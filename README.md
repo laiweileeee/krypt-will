@@ -17,7 +17,7 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 - [ ] Create Will Page - For will owners to create will
 - [ ] View Will Page - For will owners to view their will
 - [x] Mint Page - For Gov to mint NFTs to will owners
-- [ ] Simulate Death Path - For Gov to simulate will owners' death and execute will
+- [ ] ExecuteWill Death Path - For Gov to simulate will owners' death and execute will
 
 # How to start
 

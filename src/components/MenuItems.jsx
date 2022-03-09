@@ -30,14 +30,14 @@ function MenuItems() {
       <Menu.Item key="/mint">
         <NavLink to="/mint">Mint</NavLink>
       </Menu.Item>
-      <Menu.Item key="/simulate">
-        <NavLink to="/simulate">Simulate</NavLink>
+      <Menu.Item key="/execute">
+        <NavLink to="/execute">Execute Will</NavLink>
       </Menu.Item>
       {/*<Menu.Item key="/wallet">*/}
       {/*  <NavLink to="/wallet"> Wallet</NavLink>*/}
       {/*</Menu.Item>*/}
       <Menu.Item key="/nftBalance">
-        <NavLink to="/nftBalance">🖼 NFTs</NavLink>
+        <NavLink to="/nftBalance">NFT Gallery</NavLink>
       </Menu.Item>
       {/*<Menu.Item key="/1inch">*/}
       {/*  <NavLink to="/1inch">🏦 Dex</NavLink>*/}

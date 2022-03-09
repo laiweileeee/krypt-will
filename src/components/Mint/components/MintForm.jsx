@@ -53,11 +53,6 @@ const styles = {
 
 function MintForm() {
   const { Moralis } = useMoralis();
-  const { native } = useMoralisWeb3Api();
-  const [receiver, setReceiver] = useState();
-
-  const [tx, setTx] = useState();
-  const [amount, setAmount] = useState();
   const [isPending, setIsPending] = useState(false);
 
   const [asset, setAsset] = useState();
@@ -68,7 +63,7 @@ function MintForm() {
 
   // List of deployed asset contracts and their names
   const assets = {
-    House: "0xC664eaE6BC7b797Df98DC29a0575C3ECC1234a6A",
+    House: "0xC664eaE6BC7b797Df98DC29a0575C3ECC1234a6A", // AssetNFT contract already deployed on Rinkeby Testnet.
     Car: "0x0",
     ExampleDeed: "0x..0",
   };
@@ -106,15 +101,6 @@ function MintForm() {
     console.log("BA", recipientAdd);
     console.log("assetContractAdd", assets[asset]);
 
-    if (!recipientAdd) {
-      message.error("Please input recipient Address!");
-      return;
-    }
-    if (!fileUrl) {
-      message.error("Please upload an image file!");
-      return;
-    }
-
     // create JSON metadata and upload to IPFS
     const metaData = JSON.stringify({
       name: "",
@@ -131,6 +117,7 @@ function MintForm() {
       const tokenId = (await getTotalSupply(assets[asset])) + 1;
 
       /* after file is uploaded to IPFS, pass the URL to mint NFT on the blockchain */
+
       // execute create Will function using moralisAPI
       const mintTransaction = await Moralis.executeFunction({
         contractAddress: assets[asset],
@@ -144,7 +131,7 @@ function MintForm() {
       });
 
       console.log(mintTransaction.hash);
-
+      setIsPending(true);
       // Wait until the transaction is confirmed
       await mintTransaction.wait();
 
@@ -162,6 +149,7 @@ function MintForm() {
       setRecipientAdd("");
       setAsset(undefined);
       setFileUrl(undefined);
+      setIsPending(false);
     } catch (error) {
       console.log("Error uploading file: ", error);
     }
@@ -277,7 +265,7 @@ function MintForm() {
           loading={isPending}
           style={{ width: "100%", marginTop: "25px" }}
           onClick={mintNFT}
-          // disabled={!tx}
+          disabled={!recipientAdd || !fileUrl || !asset}
         >
           Mint NFT
         </Button>

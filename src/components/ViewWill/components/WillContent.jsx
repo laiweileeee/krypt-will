@@ -6,11 +6,7 @@ import {
 import { Button, Input, notification } from "antd";
 import Text from "antd/lib/typography/Text";
 import { useEffect, useState } from "react";
-import {
-  useMoralis,
-  useMoralisWeb3Api,
-  useMoralisWeb3ApiCall,
-} from "react-moralis";
+import { useMoralis } from "react-moralis";
 
 const styles = {
   card: {
@@ -49,30 +45,10 @@ const styles = {
 
 function WillContent() {
   const { Moralis } = useMoralis();
-  const [receiver, setReceiver] = useState();
-  const [asset, setAsset] = useState();
-  const [tx, setTx] = useState();
-  const [amount, setAmount] = useState();
-  const [isPending, setIsPending] = useState(false);
 
   const [beneficiaryAdd, setBeneficiaryAdd] = useState();
   const [assetContractAdd, setAssetContractAdd] = useState();
   const [tokenId, setTokenId] = useState(0);
-
-  // useEffect(() => {
-  //   asset && amount && receiver ? setTx({ amount, receiver, asset }) : setTx();
-  // }, [asset, amount, receiver]);
-
-  const openNotification = ({ message, description }) => {
-    notification.open({
-      placement: "bottomRight",
-      message,
-      description,
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
-    });
-  };
 
   const createWill = async () => {
     // input checks
