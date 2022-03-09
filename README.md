@@ -1,4 +1,4 @@
-# `kryptwill`
+# `krypt-will`
 
 Immutable & Trusted Digital Will Platform
 
