@@ -7,7 +7,7 @@ This project is built using [react-moralis](https://github.com/MoralisWeb3/react
 Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
 
 ### Architecture
-![alt text](https://drive.google.com/drive/folders/1kb9KPL_UAl0qn2kk5i1NzzYHA1dOAaT6)
+![Architecture]https://drive.google.com/file/d/1nUNhnY6qCiCGO8-2LJ2ZwDLH5Yl7Qh51/view?usp=sharing)
 
 ### Contracts (Stored in './Truffle/contracts')
 - [ ] Will.sol - handles will contract functionalities (some functions not done)
