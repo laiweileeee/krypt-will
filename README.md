@@ -7,6 +7,8 @@ This project is built using [react-moralis](https://github.com/MoralisWeb3/react
 Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
 
 
+
+
 ## Contracts (Stored in './Truffle/contracts')
 - [ ] Will.sol - handles will contract functionalities (some functions not done)
 - [x] WillFactory.sol - handles creating clones of Will contracts
@@ -20,6 +22,8 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 ![alt text](https://github.com/laiweileeee/kryptwill/blob/main/Contracts.png)
 
 
+
+
 ## Front-End Pages
 - [ ] Create Will Page - For will owners to create will (Partially done)
 - [ ] View Will Page - For will owners to view their will
@@ -29,8 +33,12 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 Note: I'm not sure how complex it should be but these are the base functionality needed, can extend more after 
 
 
+
+
 ## Architecture
 ![Architecture](https://github.com/laiweileeee/kryptwill/blob/main/Overview.png)
+
+
 
 
 # How to start
