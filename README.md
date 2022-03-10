@@ -6,9 +6,6 @@ This project is built using [react-moralis](https://github.com/MoralisWeb3/react
 
 Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
 
-## Architecture
-![Architecture](https://github.com/laiweileeee/kryptwill/blob/main/Overview.png)
-
 
 ## Contracts (Stored in './Truffle/contracts')
 - [ ] Will.sol - handles will contract functionalities (some functions not done)
@@ -30,6 +27,11 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 - [x] Execute Will Page - For Gov to simulate will owners' death and execute will
 
 Note: I'm not sure how complex it should be but these are the base functionality needed, can extend more after 
+
+
+## Architecture
+![Architecture](https://github.com/laiweileeee/kryptwill/blob/main/Overview.png)
+
 
 # How to start
 
