@@ -7,7 +7,6 @@ This project is built using [react-moralis](https://github.com/MoralisWeb3/react
 Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
 
 <br/>
-<br/>
 
 ## Contracts (Stored in './Truffle/contracts')
 - [ ] Will.sol - handles will contract functionalities (some functions not done)
@@ -22,7 +21,6 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 ![alt text](https://github.com/laiweileeee/kryptwill/blob/main/Contracts.png)
 
 <br/>
-<br/>
 
 
 ## Front-End Pages
@@ -34,12 +32,10 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 Note: I'm not sure how complex it should be but these are the base functionality needed, can extend more after 
 
 <br/>
-<br/>
 
 ## Architecture
 ![Architecture](https://github.com/laiweileeee/kryptwill/blob/main/Overview.png)
 
-<br/>
 <br/>
 
 # How to start
