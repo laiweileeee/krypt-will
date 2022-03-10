@@ -22,22 +22,22 @@ function MenuItems() {
       {/*  <NavLink to="/quickstart">🚀 Quick Start</NavLink>*/}
       {/*</Menu.Item>*/}
       <Menu.Item key="/create">
-        <NavLink to="/create">📄 Create Will</NavLink>
+        <NavLink to="/create">Create</NavLink>
       </Menu.Item>
       <Menu.Item key="/view">
-        <NavLink to="/view">📄 View Will</NavLink>
+        <NavLink to="/view">View</NavLink>
       </Menu.Item>
       <Menu.Item key="/mint">
         <NavLink to="/mint">Mint</NavLink>
       </Menu.Item>
       <Menu.Item key="/execute">
-        <NavLink to="/execute">Execute Will</NavLink>
+        <NavLink to="/execute">Execute</NavLink>
       </Menu.Item>
       {/*<Menu.Item key="/wallet">*/}
       {/*  <NavLink to="/wallet"> Wallet</NavLink>*/}
       {/*</Menu.Item>*/}
       <Menu.Item key="/nftBalance">
-        <NavLink to="/nftBalance">NFT Gallery</NavLink>
+        <NavLink to="/nftBalance">Gallery</NavLink>
       </Menu.Item>
       {/*<Menu.Item key="/1inch">*/}
       {/*  <NavLink to="/1inch">🏦 Dex</NavLink>*/}

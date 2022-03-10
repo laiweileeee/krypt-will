@@ -152,6 +152,7 @@ function MintForm() {
       setIsPending(false);
     } catch (error) {
       console.log("Error uploading file: ", error);
+      setIsPending(false);
     }
   };
 

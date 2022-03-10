@@ -81,6 +81,7 @@ function ExecuteWillForm() {
     message.success(
       `Successfully executed will at address ${executeWillTxMsg2}!!`,
     );
+    setWillContractAdd(undefined);
     setIsPending(false);
   };
 
@@ -98,6 +99,7 @@ function ExecuteWillForm() {
           <Input
             size="large"
             prefix={<FileSearchOutlined />}
+            value={willContractAdd}
             onChange={(e) => {
               setWillContractAdd(`${e.target.value}`);
             }}

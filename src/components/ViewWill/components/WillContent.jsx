@@ -99,44 +99,44 @@ function WillContent() {
         <div style={styles.header}>
           <h3>View Will</h3>
         </div>
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>Recipient:</Text>
-          </div>
-          <Input
-            size="large"
-            prefix={<FileSearchOutlined />}
-            autoFocus
-            onChange={(e) => {
-              setBeneficiaryAdd(e.target.value);
-            }}
-          />
-        </div>
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>NFT Address:</Text>
-          </div>
-          <Input
-            size="large"
-            prefix={<FileSearchOutlined />}
-            autoFocus
-            onChange={(e) => {
-              setAssetContractAdd(e.target.value);
-            }}
-          />
-        </div>
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>TokenId:</Text>
-          </div>
-          <Input
-            size="large"
-            prefix={<NumberOutlined />}
-            onChange={(e) => {
-              setTokenId(`${e.target.value}`);
-            }}
-          />
-        </div>
+        {/*<div style={styles.select}>*/}
+        {/*  <div style={styles.textWrapper}>*/}
+        {/*    <Text strong>Recipient:</Text>*/}
+        {/*  </div>*/}
+        {/*  <Input*/}
+        {/*    size="large"*/}
+        {/*    prefix={<FileSearchOutlined />}*/}
+        {/*    autoFocus*/}
+        {/*    onChange={(e) => {*/}
+        {/*      setBeneficiaryAdd(e.target.value);*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*</div>*/}
+        {/*<div style={styles.select}>*/}
+        {/*  <div style={styles.textWrapper}>*/}
+        {/*    <Text strong>NFT Address:</Text>*/}
+        {/*  </div>*/}
+        {/*  <Input*/}
+        {/*    size="large"*/}
+        {/*    prefix={<FileSearchOutlined />}*/}
+        {/*    autoFocus*/}
+        {/*    onChange={(e) => {*/}
+        {/*      setAssetContractAdd(e.target.value);*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*</div>*/}
+        {/*<div style={styles.select}>*/}
+        {/*  <div style={styles.textWrapper}>*/}
+        {/*    <Text strong>TokenId:</Text>*/}
+        {/*  </div>*/}
+        {/*  <Input*/}
+        {/*    size="large"*/}
+        {/*    prefix={<NumberOutlined />}*/}
+        {/*    onChange={(e) => {*/}
+        {/*      setTokenId(`${e.target.value}`);*/}
+        {/*    }}*/}
+        {/*  />*/}
+        {/*</div>*/}
         {/*<div style={styles.select}>*/}
         {/*  <div style={styles.textWrapper}>*/}
         {/*    <Text strong>Asset:</Text>*/}
