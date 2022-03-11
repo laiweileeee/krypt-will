@@ -41,6 +41,15 @@ const styles = {
     marginBottom: "8px",
     height: "30px",
   },
+  connect: {
+    height: "42px",
+    padding: "0 15px",
+    width: "fit-content",
+    background: "#528FE8",
+    color: "#FFFFFF",
+    borderRadius: "2rem",
+    fontWeight: "500",
+  },
 };
 
 function Account() {
@@ -53,7 +62,7 @@ function Account() {
     return (
       <>
         <div onClick={() => setIsAuthModalVisible(true)}>
-          <p style={styles.text}>Authenticate</p>
+          <Button style={styles.connect}>Connect Wallet</Button>
         </div>
         <Modal
           visible={isAuthModalVisible}
