@@ -9,7 +9,7 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 <br/>
 
 ## Contracts (Stored in './Truffle/contracts')
-- [ ] Will.sol - handles will contract functionalities (some functions not done)
+- [ ] Will.sol - handles will contract functionalities (some functions not done, haven't thought about how to encrypt will details)
 - [x] WillFactory.sol - handles creating clones of Will contracts
 - https://betterprogramming.pub/learn-solidity-the-factory-pattern-75d11c3e7d29
 - [x] CloneFactory.sol - base code used for WillFactory.sol
