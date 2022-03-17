@@ -24,6 +24,7 @@ import { create as ipfsHttpClient } from "ipfs-http-client";
 import AssetNFTSelector from "./AssetNFTSelector";
 import _ from "lodash";
 import { assetNftContractABI } from "../../../contracts/assetNftContracABI";
+import { truncateEthAddress } from "../../../utils/TruffleEthAddress";
 
 const styles = {
   card: {
@@ -159,6 +160,7 @@ function MintForm() {
   const client = ipfsHttpClient("https://ipfs.infura.io:5001/api/v0");
 
   const uploadToIPFS = async (file) => {
+    setImgLoading(true);
     try {
       const added = await client.add(file, {
         progress: (prog) => console.log(`received: ${prog}`),
@@ -183,7 +185,7 @@ function MintForm() {
           }}
         >
           <div style={{ textAlign: "center" }}>
-            Minting Asset to will owner...
+            Minting Asset to {truncateEthAddress(recipientAdd)}
           </div>
           <div style={{ marginTop: "50px", marginBottom: "50px" }}>
             <Spin size="large" />
@@ -193,6 +195,10 @@ function MintForm() {
         <div style={styles.tranfer}>
           <div style={styles.header}>
             <h3>Mint Asset NFT</h3>
+            <p style={{ color: "red", fontWeight: "normal" }}>
+              {" "}
+              ---- Only available for gov address! ----{" "}
+            </p>
           </div>
           <div style={styles.select}>
             <div style={styles.textWrapper}>
@@ -257,7 +263,6 @@ function MintForm() {
                   multiple={false}
                   action={(file) => uploadToIPFS(file)}
                   onChange={(info) => {
-                    setImgLoading(true);
                     console.log("info", info);
                     const { status } = info.file;
                     if (status !== "uploading") {

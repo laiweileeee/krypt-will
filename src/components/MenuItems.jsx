@@ -1,6 +1,7 @@
 import { useLocation } from "react-router";
 import { Menu } from "antd";
 import { NavLink } from "react-router-dom";
+import { useEffect } from "react";
 
 function MenuItems() {
   const { pathname } = useLocation();
@@ -16,8 +17,12 @@ function MenuItems() {
         width: "100%",
         justifyContent: "center",
       }}
+      selectedKeys={pathname}
       defaultSelectedKeys={[pathname]}
     >
+      <Menu.Item key="/nftBalance">
+        <NavLink to="/nftBalance">Assets</NavLink>
+      </Menu.Item>
       <Menu.Item key="/create">
         <NavLink to="/create">Create</NavLink>
       </Menu.Item>
@@ -25,13 +30,10 @@ function MenuItems() {
         <NavLink to="/view">View</NavLink>
       </Menu.Item>
       <Menu.Item key="/mint">
-        <NavLink to="/mint">Mint</NavLink>
+        <NavLink to="/mint">Mint (Gov)</NavLink>
       </Menu.Item>
       <Menu.Item key="/execute">
-        <NavLink to="/execute">Execute</NavLink>
-      </Menu.Item>
-      <Menu.Item key="/nftBalance">
-        <NavLink to="/nftBalance">Assets</NavLink>
+        <NavLink to="/execute">Execute (Gov) </NavLink>
       </Menu.Item>
 
       {/*  Unused nav links */}

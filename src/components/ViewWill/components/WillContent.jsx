@@ -67,6 +67,7 @@ function WillContent() {
 
     // only fetch when there is a web3 instance
     if (account) fetchData();
+    // eslint-disable-next-line
   }, [isAuthenticated, account]);
 
   const fetchWill = async () => {
@@ -103,6 +104,10 @@ function WillContent() {
       <div style={styles.tranfer}>
         <div style={styles.header}>
           <h3>View Will</h3>
+          <p style={{ color: "red", fontWeight: "normal" }}>
+            {" "}
+            ---- Fetching from a hardcoded will contract ----{" "}
+          </p>
         </div>
 
         {loading ? (
