@@ -30,7 +30,13 @@ export default function AssetNFTSelector({ value, options, setAsset, style }) {
   }
 
   return (
-    <Select value={value} onChange={handleChange} size="large" style={style}>
+    <Select
+      value={value}
+      onChange={handleChange}
+      size="large"
+      placeholder="Select an Asset"
+      style={style}
+    >
       {optionsList &&
         optionsList.map((optionName) => {
           // console.log(optionName);

@@ -4,7 +4,15 @@ import {
   NumberOutlined,
   InboxOutlined,
 } from "@ant-design/icons";
-import { Button, Input, notification, Upload, message, Select } from "antd";
+import {
+  Button,
+  Input,
+  notification,
+  Upload,
+  message,
+  Select,
+  Spin,
+} from "antd";
 import Text from "antd/lib/typography/Text";
 import { useEffect, useState } from "react";
 import {
@@ -54,12 +62,11 @@ const styles = {
 
 function MintForm() {
   const { Moralis } = useMoralis();
-  const [isPending, setIsPending] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [imgLoading, setImgLoading] = useState(false);
 
   const [asset, setAsset] = useState();
-  const [assetContractAdd, setAssetContractAdd] = useState();
   const [recipientAdd, setRecipientAdd] = useState();
-  const [tokenId, setTokenId] = useState(0);
   const [fileUrl, setFileUrl] = useState(null);
 
   // List of deployed asset contracts and their names
@@ -67,21 +74,6 @@ function MintForm() {
     House: "0xC664eaE6BC7b797Df98DC29a0575C3ECC1234a6A", // AssetNFT contract already deployed on Rinkeby Testnet.
     Car: "won't work",
     ExampleDeed: "won't work",
-  };
-
-  // useEffect(() => {
-  //   asset && amount && receiver ? setTx({ amount, receiver, asset }) : setTx();
-  // }, [asset, amount, receiver]);
-
-  const openNotification = ({ message, description }) => {
-    notification.open({
-      placement: "bottomRight",
-      message,
-      description,
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
-    });
   };
 
   // takes in array of asset contracts, gets all this info
@@ -132,7 +124,7 @@ function MintForm() {
       });
 
       console.log(mintTransaction.hash);
-      setIsPending(true);
+      setLoading(true);
       // Wait until the transaction is confirmed
       await mintTransaction.wait();
 
@@ -150,10 +142,10 @@ function MintForm() {
       setRecipientAdd("");
       setAsset(undefined);
       setFileUrl(undefined);
-      setIsPending(false);
+      setLoading(false);
     } catch (error) {
       console.log("Error uploading file: ", error);
-      setIsPending(false);
+      setLoading(false);
     }
   };
 
@@ -180,104 +172,135 @@ function MintForm() {
 
   return (
     <div style={styles.card}>
-      <div style={styles.tranfer}>
-        <div style={styles.header}>
-          <h3>Mint Asset NFT</h3>
-        </div>
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>Asset:</Text>
-          </div>
-
-          {/* Remove later */}
-          <AssetNFTSelector
-            // TODO: Remove hard coded options
-            value={asset}
-            options={assets}
-            setAsset={setAsset}
-            style={{ width: "100%" }}
-          />
-          {/*<AssetSelector setAsset={setAsset} style={{ width: "100%" }} />*/}
-        </div>
-
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>Recipient:</Text>
-          </div>
-          <Input
-            size="large"
-            prefix={<FileSearchOutlined />}
-            autoFocus
-            value={recipientAdd}
-            onChange={(e) => {
-              setRecipientAdd(e.target.value);
-            }}
-          />
-        </div>
-
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>Upload Image:</Text>
-          </div>
-          <div style={{ width: "100%" }}>
-            {fileUrl ? (
-              <div>
-                <img src={fileUrl} />
-              </div>
-            ) : (
-              <Upload.Dragger
-                name="file"
-                multiple={false}
-                action={(file) => uploadToIPFS(file)}
-                onChange={(info) => {
-                  console.log("info", info);
-                  const { status } = info.file;
-                  if (status !== "uploading") {
-                    console.log(info.file, info.fileList);
-                  }
-                  if (fileUrl) {
-                    message.success(
-                      `${info.file.name} file uploaded successfully.`,
-                    );
-                  } else if (status === "error") {
-                    message.error(`${info.file.name} file upload failed.`);
-                  }
-                }}
-                onDrop={(e) => {
-                  console.log("Dropped files", e.dataTransfer.files);
-                }}
-              >
-                <Upload customRequest={dummyRequest} />
-                <p className="ant-upload-drag-icon">
-                  <InboxOutlined />
-                </p>
-                <p className="ant-upload-text">
-                  Click or drag file to this area to upload
-                </p>
-                <p className="ant-upload-hint">
-                  Support for a single or bulk upload.
-                </p>
-              </Upload.Dragger>
-            )}
-          </div>
-        </div>
-        <Button
-          type="primary"
-          size="large"
-          loading={isPending}
-          style={{ width: "100%", marginTop: "25px" }}
-          onClick={mintNFT}
-          disabled={!recipientAdd || !fileUrl || !asset}
+      {loading ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "25px",
+          }}
         >
-          Mint NFT
-        </Button>
-        {/*<div style={styles.select}>*/}
-        {/*  <div style={styles.textWrapper}>*/}
-        {/*    <Text strong>Asset:</Text>*/}
-        {/*  </div>*/}
-        {/*  <AssetSelector setAsset={setAsset} style={{ width: "100%" }} />*/}
-        {/*</div>*/}
-      </div>
+          <div style={{ textAlign: "center" }}>
+            Minting Asset to will owner...
+          </div>
+          <div style={{ marginTop: "50px", marginBottom: "50px" }}>
+            <Spin size="large" />
+          </div>
+        </div>
+      ) : (
+        <div style={styles.tranfer}>
+          <div style={styles.header}>
+            <h3>Mint Asset NFT</h3>
+          </div>
+          <div style={styles.select}>
+            <div style={styles.textWrapper}>
+              <Text strong>Asset:</Text>
+            </div>
+
+            {/* Remove later */}
+            <AssetNFTSelector
+              // TODO: Remove hard coded options
+              value={asset}
+              options={assets}
+              setAsset={setAsset}
+              style={{ width: "100%" }}
+            />
+            {/*<AssetSelector setAsset={setAsset} style={{ width: "100%" }} />*/}
+          </div>
+
+          <div style={styles.select}>
+            <div style={styles.textWrapper}>
+              <Text strong>Recipient:</Text>
+            </div>
+            <Input
+              size="large"
+              prefix={<FileSearchOutlined />}
+              autoFocus
+              value={recipientAdd}
+              onChange={(e) => {
+                setRecipientAdd(e.target.value);
+              }}
+              placeholder="Enter will owner address"
+              allowClear={true}
+            />
+          </div>
+
+          <div style={styles.select}>
+            <div style={styles.textWrapper}>
+              <Text strong>Upload Image:</Text>
+            </div>
+            <div style={{ width: "100%" }}>
+              {fileUrl ? (
+                <div>
+                  {imgLoading && (
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Spin />
+                    </div>
+                  )}
+                  <img
+                    style={{ display: imgLoading ? "none" : "block" }}
+                    src={fileUrl}
+                    onLoad={() => setImgLoading(false)}
+                  />
+                </div>
+              ) : (
+                <Upload.Dragger
+                  name="file"
+                  multiple={false}
+                  action={(file) => uploadToIPFS(file)}
+                  onChange={(info) => {
+                    setImgLoading(true);
+                    console.log("info", info);
+                    const { status } = info.file;
+                    if (status !== "uploading") {
+                      console.log(info.file, info.fileList);
+                    }
+                    if (fileUrl) {
+                      message.success(
+                        `${info.file.name} file uploaded successfully.`,
+                      );
+                    } else if (status === "error") {
+                      message.error(`${info.file.name} file upload failed.`);
+                    }
+                  }}
+                  onDrop={(e) => {
+                    console.log("Dropped files", e.dataTransfer.files);
+                  }}
+                >
+                  <Upload customRequest={dummyRequest} />
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">
+                    Click or drag file to this area to upload
+                  </p>
+                  <p className="ant-upload-hint">
+                    Support for a single or bulk upload.
+                  </p>
+                </Upload.Dragger>
+              )}
+            </div>
+          </div>
+          <Button
+            type="primary"
+            size="large"
+            loading={loading}
+            style={{ width: "100%", marginTop: "25px" }}
+            onClick={mintNFT}
+            disabled={!recipientAdd || !fileUrl || !asset}
+          >
+            Mint NFT
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

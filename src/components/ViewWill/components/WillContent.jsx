@@ -3,7 +3,7 @@ import {
   FileSearchOutlined,
   NumberOutlined,
 } from "@ant-design/icons";
-import { Button, Input, notification } from "antd";
+import { Button, Input, notification, Spin, Space } from "antd";
 import Text from "antd/lib/typography/Text";
 import { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
@@ -50,17 +50,26 @@ const styles = {
 const willContractAddress = "0x145c8B5d8C158D24159Da4A0972864F287482A8d";
 
 function WillContent() {
-  const { Moralis } = useMoralis();
+  const { Moralis, isAuthenticated, account } = useMoralis();
 
   const [beneficiaryAdd, setBeneficiaryAdd] = useState();
   const [assetContractAdd, setAssetContractAdd] = useState();
   const [tokenId, setTokenId] = useState(0);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => fetchWill);
+  // run upon existences of web3 instance
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      await fetchWill();
+      setLoading(false);
+    };
+
+    // only fetch when there is a web3 instance
+    if (account) fetchData();
+  }, [isAuthenticated, account]);
 
   const fetchWill = async () => {
-    console.log("inside fetchwill ");
-
     //get beneficiaries[0]
     const fetchBeneficiariesTxMsg = await Moralis.executeFunction({
       contractAddress: willContractAddress,
@@ -95,25 +104,43 @@ function WillContent() {
         <div style={styles.header}>
           <h3>View Will</h3>
         </div>
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>Recipient:</Text>
+
+        {loading ? (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "25px",
+            }}
+          >
+            <Spin size="large" />
           </div>
-          <p>{beneficiaryAdd ? truncateEthAddress(beneficiaryAdd) : "-"}</p>
-        </div>
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>NFT Address:</Text>
-          </div>
-          <p>{assetContractAdd ? truncateEthAddress(assetContractAdd) : "-"}</p>
-        </div>
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>TokenId:</Text>
-          </div>
-          <p>{tokenId}</p>
-        </div>
-        {/*<Button onClick={fetchWill}>Fetch</Button>*/}
+        ) : (
+          <section>
+            <div style={styles.select}>
+              <div style={styles.textWrapper}>
+                <Text strong>Recipient:</Text>
+              </div>
+              <p>{beneficiaryAdd ? truncateEthAddress(beneficiaryAdd) : "-"}</p>
+            </div>
+            <div style={styles.select}>
+              <div style={styles.textWrapper}>
+                <Text strong>NFT Address:</Text>
+              </div>
+              <p>
+                {assetContractAdd ? truncateEthAddress(assetContractAdd) : "-"}
+              </p>
+            </div>
+            <div style={styles.select}>
+              <div style={styles.textWrapper}>
+                <Text strong>TokenId:</Text>
+              </div>
+              <p>{tokenId}</p>
+            </div>
+            {/*<Button onClick={fetchWill}>Fetch</Button>*/}
+          </section>
+        )}
       </div>
     </div>
   );

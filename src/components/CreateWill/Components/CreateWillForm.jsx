@@ -225,6 +225,8 @@ function CreateWillForm() {
             onChange={(e) => {
               setBeneficiaryAdd(e.target.value);
             }}
+            placeholder="Enter beneficiary address"
+            allowClear={true}
           />
         </div>
 

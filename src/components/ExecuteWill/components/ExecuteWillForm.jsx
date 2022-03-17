@@ -104,6 +104,7 @@ function ExecuteWillForm() {
             onChange={(e) => {
               setWillContractAdd(`${e.target.value}`);
             }}
+            placeholder="Enter will contract address"
           />
         </div>
 
