@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract WillFactory is Ownable, CloneFactory {
     Will[] public wills;
     address masterWillContract;
-    mapping(address => address) willOwnerToWillAddress;
+    mapping(address => address) public willOwnerToWillAddress;
 
     event WillCreated(Will newWill);
 
