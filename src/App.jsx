@@ -27,6 +27,7 @@ import CreateWill from "./components/CreateWill";
 import ViewWill from "./components/ViewWill";
 import Mint from "./components/Mint";
 import ExecuteWill from "./components/ExecuteWill";
+import CreateWillGov from "components/CreateWillGov";
 const { Header, Footer } = Layout;
 
 const styles = {
@@ -100,6 +101,9 @@ const App = ({ isServerInfo }) => {
             </Route>
             <Route path="/execute">
               <ExecuteWill />
+            </Route>
+            <Route path="/createGov">
+              <CreateWillGov />
             </Route>
             <Route path="/nftBalance">
               <NFTBalance />

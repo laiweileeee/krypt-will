@@ -29,6 +29,9 @@ function MenuItems() {
       <Menu.Item key="/view">
         <NavLink to="/view">View</NavLink>
       </Menu.Item>
+      <Menu.Item key="/createGov">
+        <NavLink to="/createGov">Create (Gov) </NavLink>
+      </Menu.Item>
       <Menu.Item key="/mint">
         <NavLink to="/mint">Mint (Gov)</NavLink>
       </Menu.Item>
