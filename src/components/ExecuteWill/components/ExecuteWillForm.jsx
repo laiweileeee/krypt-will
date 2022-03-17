@@ -1,9 +1,10 @@
 import { CreditCardOutlined, FileSearchOutlined } from "@ant-design/icons";
-import { Button, Input, message, notification } from "antd";
+import { Button, Input, message, notification, Spin } from "antd";
 import Text from "antd/lib/typography/Text";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
 import { willContractABI } from "../../../contracts/willContractABI";
+import { truncateEthAddress } from "../../../utils/TruffleEthAddress";
 
 const styles = {
   card: {
@@ -42,8 +43,9 @@ const styles = {
 
 function ExecuteWillForm() {
   const { Moralis } = useMoralis();
-  const [isPending, setIsPending] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [willContractAdd, setWillContractAdd] = useState();
+  const [txHash, setTxHash] = useState();
 
   const executeWill = async () => {
     // execute create Will function using moralisAPI
@@ -54,7 +56,8 @@ function ExecuteWillForm() {
     });
 
     console.log(executeWillTx.hash);
-    setIsPending(true);
+    setTxHash(executeWillTx.hash);
+    setLoading(true);
 
     // Wait until the transaction is confirmed
     await executeWillTx.wait();
@@ -83,46 +86,77 @@ function ExecuteWillForm() {
       `Successfully executed will at address ${executeWillTxMsg2}!!`,
     );
     setWillContractAdd(undefined);
-    setIsPending(false);
+    setLoading(false);
   };
 
   return (
     <div style={styles.card}>
-      <div style={styles.tranfer}>
-        <div style={styles.header}>
-          <h3>Execute will </h3>
-          <p style={{ color: "red", fontWeight: "normal" }}>
-            {" "}
-            ---- Only available ONCE for gov address! ----{" "}
-          </p>{" "}
-        </div>
-
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>Address:</Text>
-          </div>
-          <Input
-            size="large"
-            prefix={<FileSearchOutlined />}
-            value={willContractAdd}
-            onChange={(e) => {
-              setWillContractAdd(`${e.target.value}`);
-            }}
-            placeholder="Enter will contract address"
-          />
-        </div>
-
-        <Button
-          type="primary"
-          size="large"
-          loading={isPending}
-          style={{ width: "100%", marginTop: "25px" }}
-          onClick={executeWill}
-          disabled={!willContractAdd}
+      {loading ? (
+        //  show spinner
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "25px",
+          }}
         >
-          Simulate Death 💀
-        </Button>
-      </div>
+          <div style={{ textAlign: "center" }}>
+            Executing will at {truncateEthAddress(willContractAdd)}...
+          </div>
+          <div style={{ textAlign: "center", fontWeight: "normal" }}>
+            View transaction{" "}
+            <a
+              href={`https://rinkeby.etherscan.io/tx/${txHash}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              here
+            </a>
+          </div>
+          <div style={{ marginTop: "50px", marginBottom: "50px" }}>
+            <Spin size="large" />
+          </div>
+        </div>
+      ) : (
+        //  show execute will form
+        <div>
+          <div style={styles.header}>
+            <h3>Execute will </h3>
+            <p style={{ color: "red", fontWeight: "normal" }}>
+              {" "}
+              ---- Only available ONCE for gov address! ----{" "}
+            </p>{" "}
+          </div>
+
+          <div style={styles.select}>
+            <div style={styles.textWrapper}>
+              <Text strong>Address:</Text>
+            </div>
+            <Input
+              size="large"
+              prefix={<FileSearchOutlined />}
+              value={willContractAdd}
+              onChange={(e) => {
+                setWillContractAdd(`${e.target.value}`);
+              }}
+              placeholder="Enter will contract address"
+            />
+          </div>
+
+          <Button
+            type="primary"
+            size="large"
+            loading={loading}
+            style={{ width: "100%", marginTop: "25px" }}
+            onClick={executeWill}
+            disabled={!willContractAdd}
+          >
+            Simulate Death 💀
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

@@ -15,6 +15,7 @@ import {
   Tooltip,
   message,
   Empty,
+  Spin,
 } from "antd";
 import Text from "antd/lib/typography/Text";
 import React, { useEffect, useState } from "react";
@@ -69,13 +70,14 @@ function CreateWillForm() {
   const { Moralis, account, isAuthenticated } = useMoralis();
   const { data: NFTBalances } = useNFTBalances();
   const [connectedAddress, setConnectedAddress] = useState();
-  const [isPending, setIsPending] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [isApprovalPending, setIsApprovalPending] = useState(false);
 
   const [beneficiaryAdd, setBeneficiaryAdd] = useState();
   const [assetContractAdd, setAssetContractAdd] = useState();
   const [tokenId, setTokenId] = useState();
   const [isNftApproved, setIsNftApproved] = useState(false);
+  const [txHash, setTxHash] = useState();
 
   const { verifyMetadata } = useVerifyMetadata();
 
@@ -176,7 +178,8 @@ function CreateWillForm() {
         },
       });
 
-      setIsPending(true);
+      setLoading(true);
+      setTxHash(createWillTx.hash);
       console.log("tx hash ", createWillTx.hash);
       await createWillTx.wait();
 
@@ -198,10 +201,10 @@ function CreateWillForm() {
 
       setBeneficiaryAdd(undefined);
       setAssetContractAdd(undefined);
-      setIsPending(false);
+      setLoading(false);
     } catch (error) {
       console.log("Error creating will: ", error);
-      setIsPending(false);
+      setLoading(false);
     }
   };
 
@@ -211,124 +214,153 @@ function CreateWillForm() {
 
   return (
     <div style={styles.card}>
-      <div>
-        <div style={styles.header}>
-          <h3>Create Will</h3>
-          <p style={{ color: "red", fontWeight: "normal" }}>
-            {" "}
-            ---- Gov acc must create a will contract, and specify this account
-            as a will owner first ----{" "}
-          </p>
-        </div>
-        <div style={styles.select}>
-          <div style={styles.textWrapper}>
-            <Text strong>Recipient:</Text>
-          </div>
-          <Input
-            size="large"
-            prefix={<FileSearchOutlined />}
-            autoFocus
-            value={beneficiaryAdd}
-            onChange={(e) => {
-              setBeneficiaryAdd(e.target.value);
-            }}
-            placeholder="Enter beneficiary address"
-            allowClear={true}
-          />
-        </div>
-
-        {assetContractAdd ? (
-          <div>
-            <div style={styles.select}>
-              <div style={styles.textWrapper}>
-                <Text strong>Asset: </Text>
-              </div>
-
-              <Input
-                size="large"
-                prefix={<FileSearchOutlined />}
-                autoFocus
-                value={truncateEthAddress(assetContractAdd)}
-                disabled
-              />
-            </div>
-            <div style={styles.select}>
-              <div style={styles.textWrapper}>
-                <Text strong>Token ID:</Text>
-              </div>
-              <Input
-                size="large"
-                prefix={<NumberOutlined />}
-                autoFocus
-                value={tokenId}
-                disabled
-              />
-            </div>
-
-            {/* Approve all NFTs if they aren't approved yet   */}
-            {!isNftApproved && (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  padding: "20px",
-                  border: "0.5px",
-                  borderStyle: "solid",
-                  borderColor: "lightgray",
-                  borderRadius: "3px",
-                  marginTop: "20px",
-                }}
-              >
-                <p style={{ fontWeight: "normal" }}>
-                  You have not approved your NFTs for usage
-                </p>
-                <Button
-                  type="primary"
-                  size="large"
-                  loading={isApprovalPending}
-                  style={{
-                    width: "auto",
-                    marginTop: "10px",
-                    textAlign: "center",
-                  }}
-                  onClick={approveAllNfts}
-                >
-                  Approve ALL NFTs
-                </Button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              type="primary"
-              size="large"
-              loading={isPending}
-              style={{
-                width: "auto",
-                marginTop: "25px",
-              }}
-              onClick={showModal} // disabled={}
-            >
-              Choose NFT
-            </Button>
-          </div>
-        )}
-
-        <Button
-          type="primary"
-          size="large"
-          loading={isPending}
-          style={{ width: "100%", marginTop: "25px" }}
-          onClick={createWill}
-          disabled={
-            !beneficiaryAdd || !assetContractAdd || !tokenId || !isNftApproved
-          }
+      {loading ? (
+        // show spinner
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: "25px",
+          }}
         >
-          Create Will <SendOutlined />
-        </Button>
-      </div>
+          <div style={{ textAlign: "center" }}>Creating Will...</div>
+          <div style={{ textAlign: "center", fontWeight: "normal" }}>
+            View transaction{" "}
+            <a
+              href={`https://rinkeby.etherscan.io/tx/${txHash}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              here
+            </a>
+          </div>
+          <div style={{ marginTop: "50px", marginBottom: "50px" }}>
+            <Spin size="large" />
+          </div>
+        </div>
+      ) : (
+        //  show create will form
+        <div>
+          <div style={styles.header}>
+            <h3>Create Will</h3>
+            <p style={{ color: "red", fontWeight: "normal" }}>
+              {" "}
+              ---- Gov acc must create a will contract, and specify this account
+              as a will owner first ----{" "}
+            </p>
+          </div>
+          <div style={styles.select}>
+            <div style={styles.textWrapper}>
+              <Text strong>Recipient:</Text>
+            </div>
+            <Input
+              size="large"
+              prefix={<FileSearchOutlined />}
+              autoFocus
+              value={beneficiaryAdd}
+              onChange={(e) => {
+                setBeneficiaryAdd(e.target.value);
+              }}
+              placeholder="Enter beneficiary address"
+              allowClear={true}
+            />
+          </div>
+
+          {assetContractAdd ? (
+            <div>
+              <div style={styles.select}>
+                <div style={styles.textWrapper}>
+                  <Text strong>Asset: </Text>
+                </div>
+
+                <Input
+                  size="large"
+                  prefix={<FileSearchOutlined />}
+                  autoFocus
+                  value={truncateEthAddress(assetContractAdd)}
+                  disabled
+                />
+              </div>
+              <div style={styles.select}>
+                <div style={styles.textWrapper}>
+                  <Text strong>Token ID:</Text>
+                </div>
+                <Input
+                  size="large"
+                  prefix={<NumberOutlined />}
+                  autoFocus
+                  value={tokenId}
+                  disabled
+                />
+              </div>
+
+              {/* Approve all NFTs if they aren't approved yet   */}
+              {!isNftApproved && (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    padding: "20px",
+                    border: "0.5px",
+                    borderStyle: "solid",
+                    borderColor: "lightgray",
+                    borderRadius: "3px",
+                    marginTop: "20px",
+                  }}
+                >
+                  <p style={{ fontWeight: "normal" }}>
+                    You have not approved your NFTs for usage
+                  </p>
+                  <Button
+                    type="primary"
+                    size="large"
+                    loading={isApprovalPending}
+                    style={{
+                      width: "auto",
+                      marginTop: "10px",
+                      textAlign: "center",
+                    }}
+                    onClick={approveAllNfts}
+                  >
+                    Approve ALL NFTs
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <Button
+                type="primary"
+                size="large"
+                loading={loading}
+                style={{
+                  width: "auto",
+                  marginTop: "25px",
+                }}
+                onClick={showModal} // disabled={}
+              >
+                Choose NFT
+              </Button>
+            </div>
+          )}
+
+          <Button
+            type="primary"
+            size="large"
+            loading={loading}
+            style={{ width: "100%", marginTop: "25px" }}
+            onClick={createWill}
+            disabled={
+              !beneficiaryAdd || !assetContractAdd || !tokenId || !isNftApproved
+            }
+          >
+            Create Will <SendOutlined />
+          </Button>
+        </div>
+      )}
 
       {/* Modal */}
       <Modal

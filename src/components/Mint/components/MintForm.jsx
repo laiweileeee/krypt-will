@@ -14,7 +14,7 @@ import {
   Spin,
 } from "antd";
 import Text from "antd/lib/typography/Text";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   useMoralis,
   useMoralisWeb3Api,
@@ -69,6 +69,7 @@ function MintForm() {
   const [asset, setAsset] = useState();
   const [recipientAdd, setRecipientAdd] = useState();
   const [fileUrl, setFileUrl] = useState(null);
+  const [txHash, setTxHash] = useState();
 
   // List of deployed asset contracts and their names
   const assets = {
@@ -124,8 +125,10 @@ function MintForm() {
         },
       });
 
-      console.log(mintTransaction.hash);
       setLoading(true);
+      setTxHash(mintTransaction.hash);
+      console.log(mintTransaction.hash);
+
       // Wait until the transaction is confirmed
       await mintTransaction.wait();
 
@@ -175,6 +178,7 @@ function MintForm() {
   return (
     <div style={styles.card}>
       {loading ? (
+        //  show spinner
         <div
           style={{
             display: "flex",
@@ -187,11 +191,22 @@ function MintForm() {
           <div style={{ textAlign: "center" }}>
             Minting Asset to {truncateEthAddress(recipientAdd)}
           </div>
+          <div style={{ textAlign: "center", fontWeight: "normal" }}>
+            View transaction{" "}
+            <a
+              href={`https://rinkeby.etherscan.io/tx/${txHash}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              here
+            </a>
+          </div>
           <div style={{ marginTop: "50px", marginBottom: "50px" }}>
             <Spin size="large" />
           </div>
         </div>
       ) : (
+        //  show mint form
         <div style={styles.tranfer}>
           <div style={styles.header}>
             <h3>Mint Asset NFT</h3>
