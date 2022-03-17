@@ -9,31 +9,33 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 <br/>
 
 ## Contracts (Stored in './Truffle/contracts')
+
 - [ ] Will.sol - handles will contract functionalities (some functions not done, haven't thought about how to encrypt will details)
 - [x] WillFactory.sol - handles creating clones of Will contracts
 - https://betterprogramming.pub/learn-solidity-the-factory-pattern-75d11c3e7d29
 - [x] CloneFactory.sol - base code used for WillFactory.sol
 - From https://github.com/optionality/clone-factory/blob/master/contracts/CloneFactory.sol
 - [x] AssetNFT.sol - handles asset NFT functionality
-- From https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol   
+- From https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol
 - Read more https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Enumerable
 
 ![alt text](https://github.com/laiweileeee/kryptwill/blob/main/Contracts.png)
 
 <br/>
 
-
 ## Front-End Pages
+
 - [ ] Create Will Page - For will owners to create will (Partially done)
 - [ ] View Will Page - For will owners to view their will
 - [x] Mint Page - For Gov to mint NFTs to will owners
 - [x] Execute Will Page - For Gov to simulate will owners' death and execute will
 
-Note: I'm not sure how complex it should be but these are the base functionality needed, can extend more after 
+Note: I'm not sure how complex it should be but these are the base functionality needed, can extend more after
 
 <br/>
 
 ## Architecture
+
 ![Architecture](https://github.com/laiweileeee/kryptwill/blob/main/Overview.png)
 
 <br/>

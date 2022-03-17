@@ -93,12 +93,8 @@ function ExecuteWillForm() {
           <h3>Execute will </h3>
           <p style={{ color: "red", fontWeight: "normal" }}>
             {" "}
-            ---- Only available for gov address! ----{" "}
+            ---- Only available ONCE for gov address! ----{" "}
           </p>{" "}
-          <p style={{ color: "red", fontWeight: "normal" }}>
-            {" "}
-            ---- Can only execute once ----{" "}
-          </p>
         </div>
 
         <div style={styles.select}>
