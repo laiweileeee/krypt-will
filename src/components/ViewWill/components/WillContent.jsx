@@ -8,6 +8,7 @@ import Text from "antd/lib/typography/Text";
 import { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
 import { willContractABI } from "../../../contracts/willContractABI";
+import { willFactoryABI } from "../../../contracts/willFactoryABI";
 import { truncateEthAddress } from "../../../utils/TruffleEthAddress";
 
 const styles = {
@@ -47,7 +48,8 @@ const styles = {
 
 // TODO: Remove hardcode and find a way to fetch will address associated with this user's wallet address
 // TODO: Find will contract address from user
-const willContractAddress = "0x145c8B5d8C158D24159Da4A0972864F287482A8d";
+// const willContractAddress = "0x145c8B5d8C158D24159Da4A0972864F287482A8d";
+const willFactoryAddress = "0xF04e1D951Ad1652dF7c7C930E865184E9bcD7327";
 
 function WillContent() {
   const { Moralis, isAuthenticated, account } = useMoralis();
@@ -71,32 +73,50 @@ function WillContent() {
   }, [isAuthenticated, account]);
 
   const fetchWill = async () => {
-    //get beneficiaries[0]
-    const fetchBeneficiariesTxMsg = await Moralis.executeFunction({
-      contractAddress: willContractAddress,
-      functionName: "beneficiaries",
-      abi: willContractABI,
+    const fetchWillContract = await Moralis.executeFunction({
+      contractAddress: willFactoryAddress,
+      functionName: "willOwnerToWillAddress",
+      abi: willFactoryABI,
       params: {
-        "": 0,
+        "": account,
       },
     });
 
-    console.log("fetched Beneficiary ", fetchBeneficiariesTxMsg);
-    setBeneficiaryAdd(fetchBeneficiariesTxMsg);
+    console.log("will contract:", fetchWillContract);
+    const willContractAddress = fetchWillContract;
 
-    //get assets
-    const fetchAssetTxMsg = await Moralis.executeFunction({
-      contractAddress: willContractAddress,
-      functionName: "assets",
-      abi: willContractABI,
-      params: {
-        "": fetchBeneficiariesTxMsg,
-      },
-    });
+    if (fetchWillContract !== "0x0000000000000000000000000000000000000000") {
+      try {
+        //get beneficiaries[0]
+        const fetchBeneficiariesTxMsg = await Moralis.executeFunction({
+          contractAddress: willContractAddress,
+          functionName: "beneficiaries",
+          abi: willContractABI,
+          params: {
+            "": 0,
+          },
+        });
 
-    console.log("fetched Assets", fetchAssetTxMsg);
-    setAssetContractAdd(fetchAssetTxMsg?.assetNFTcontract);
-    setTokenId(fetchAssetTxMsg?.tokenId.toNumber());
+        console.log("fetched Beneficiary ", fetchBeneficiariesTxMsg);
+        setBeneficiaryAdd(fetchBeneficiariesTxMsg);
+
+        //get assets
+        const fetchAssetTxMsg = await Moralis.executeFunction({
+          contractAddress: willContractAddress,
+          functionName: "assets",
+          abi: willContractABI,
+          params: {
+            "": fetchBeneficiariesTxMsg,
+          },
+        });
+
+        console.log("fetched Assets", fetchAssetTxMsg);
+        setAssetContractAdd(fetchAssetTxMsg?.assetNFTcontract);
+        setTokenId(fetchAssetTxMsg?.tokenId.toNumber());
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (

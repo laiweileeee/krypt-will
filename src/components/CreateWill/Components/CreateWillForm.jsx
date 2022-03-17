@@ -26,6 +26,7 @@ import { truncateEthAddress } from "../../../utils/TruffleEthAddress";
 import _ from "lodash";
 import { willContractABI } from "../../../contracts/willContractABI";
 import { assetNftContractABI } from "../../../contracts/assetNftContracABI";
+import { willFactoryABI } from "../../../contracts/willFactoryABI";
 import { NavLink } from "react-router-dom";
 
 const styles = {
@@ -65,6 +66,7 @@ const styles = {
 
 // TODO: Remove hardcode and find a way to fetch will address associated with this user's wallet address
 const willContractAddress = "0x145c8B5d8C158D24159Da4A0972864F287482A8d";
+const willFactoryAddress = "0xF04e1D951Ad1652dF7c7C930E865184E9bcD7327";
 
 function CreateWillForm() {
   const { Moralis, account, isAuthenticated } = useMoralis();
@@ -73,6 +75,7 @@ function CreateWillForm() {
   const [loading, setLoading] = useState(false);
   const [isApprovalPending, setIsApprovalPending] = useState(false);
 
+  const [willContractAdd, setWillContractAdd] = useState();
   const [beneficiaryAdd, setBeneficiaryAdd] = useState();
   const [assetContractAdd, setAssetContractAdd] = useState();
   const [tokenId, setTokenId] = useState();
@@ -100,6 +103,7 @@ function CreateWillForm() {
   // Populate connectedAddress state when user's wallet is connected
   useEffect(() => {
     setConnectedAddress(isAuthenticated && account);
+    fetchWillContractAddress();
   }, [account, isAuthenticated]);
 
   // useEffect(() => {
@@ -114,6 +118,24 @@ function CreateWillForm() {
   //   }
   // });
 
+  const fetchWillContractAddress = async () => {
+    try {
+      const fetchWillContract = await Moralis.executeFunction({
+        contractAddress: willFactoryAddress,
+        functionName: "willOwnerToWillAddress",
+        abi: willFactoryABI,
+        params: {
+          "": account,
+        },
+      });
+
+      console.log("will contract:", fetchWillContract);
+      setWillContractAdd(fetchWillContract);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const checkNftApproval = async (nftContractAddress) => {
     try {
       // Read from contract - check if intended state is updated
@@ -121,7 +143,7 @@ function CreateWillForm() {
         contractAddress: nftContractAddress,
         functionName: "isApprovedForAll",
         abi: assetNftContractABI,
-        params: { owner: connectedAddress, operator: willContractAddress },
+        params: { owner: connectedAddress, operator: willContractAdd },
       });
 
       console.log("setApprovalForAllTxMsg ", setApprovalForAllTxMsg);
@@ -140,7 +162,7 @@ function CreateWillForm() {
         functionName: "setApprovalForAll",
         abi: assetNftContractABI,
         params: {
-          operator: willContractAddress,
+          operator: willContractAdd,
           approved: true,
         },
       });
@@ -168,7 +190,7 @@ function CreateWillForm() {
     try {
       // execute function using moralisAPI
       const createWillTx = await Moralis.executeFunction({
-        contractAddress: willContractAddress,
+        contractAddress: willContractAdd,
         functionName: "createWill",
         abi: willContractABI,
         params: {
@@ -185,7 +207,7 @@ function CreateWillForm() {
 
       // check if beneficiary has been added to the contract
       const createWillTxMsg = await Moralis.executeFunction({
-        contractAddress: willContractAddress,
+        contractAddress: willContractAdd,
         functionName: "assets",
         abi: willContractABI,
         params: { "": beneficiaryAdd },
