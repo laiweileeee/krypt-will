@@ -26,8 +26,12 @@ function MenuItems({ isGovAccount }) {
       <Menu.Item key="/view" disabled={isGovAccount}>
         <NavLink to="/view">View</NavLink>
       </Menu.Item>
+
       <Menu.Item key="/mint" disabled={!isGovAccount}>
         <NavLink to="/mint">Mint</NavLink>
+      </Menu.Item>
+      <Menu.Item key="/create-will" disabled={!isGovAccount}>
+        <NavLink to="/create-will">Create Will</NavLink>
       </Menu.Item>
       <Menu.Item key="/execute" disabled={!isGovAccount}>
         <NavLink to="/execute">Execute</NavLink>
