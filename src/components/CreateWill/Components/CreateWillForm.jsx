@@ -16,6 +16,7 @@ import {
   message,
   Empty,
   Spin,
+  Space,
 } from "antd";
 import Text from "antd/lib/typography/Text";
 import React, { useEffect, useState } from "react";
@@ -443,7 +444,11 @@ function CreateWillForm() {
                       handleCancel();
                     }}
                   >
-                    <Meta title={nft.name} description={nft.token_address} />
+                    <Space direction="vertical">
+                      <Text strong>{nft.name}</Text>
+                      <Text>{truncateEthAddress(nft.token_address)}</Text>
+                      <Text>Token ID: {nft.token_id}</Text>
+                    </Space>
                   </Card>
                 );
               })}

@@ -1,6 +1,15 @@
 import React, { useState } from "react";
 import { useMoralis, useNFTBalances } from "react-moralis";
-import { Card, Image, Tooltip, Modal, Input, Skeleton, Empty } from "antd";
+import {
+  Card,
+  Image,
+  Tooltip,
+  Modal,
+  Input,
+  Skeleton,
+  Empty,
+  Space,
+} from "antd";
 import {
   FileSearchOutlined,
   SendOutlined,
@@ -10,6 +19,8 @@ import { getExplorer } from "helpers/networks";
 import AddressInput from "./AddressInput";
 import { useVerifyMetadata } from "hooks/useVerifyMetadata";
 import { NavLink } from "react-router-dom";
+import Text from "antd/lib/typography/Text";
+import { truncateEthAddress } from "../utils/TruffleEthAddress";
 
 const { Meta } = Card;
 
@@ -138,7 +149,11 @@ function NFTBalance() {
                   }
                   key={index}
                 >
-                  <Meta title={nft.name} description={nft.token_address} />
+                  <Space direction="vertical">
+                    <Text strong>{nft.name}</Text>
+                    <Text>{truncateEthAddress(nft.token_address)}</Text>
+                    <Text>Token ID: {nft.token_id}</Text>
+                  </Space>
                 </Card>
               );
             })}
