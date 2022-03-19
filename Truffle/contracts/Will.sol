@@ -31,6 +31,7 @@ contract Will {
     }
 
     struct Asset {
+        string assetId;
         address assetNftContract;
         uint256 tokenId;
         address beneficiary;
@@ -65,6 +66,7 @@ contract Will {
 
             // update state
             assets.push(Asset(
+                    asset.assetId,
                     asset.assetNftContract,
                     asset.tokenId,
                     asset.beneficiary
@@ -75,33 +77,16 @@ contract Will {
     }
 
     // expensive compute..
-    function exists(Asset[] memory assetArr, Asset memory assetToFind) internal returns (bool) {
+    function exists(Asset[] memory assetArr, Asset memory assetToFind) pure internal returns (bool) {
         for (uint i = 0; i < assetArr.length; i++) {
             Asset memory asset = assetArr[i];
 
-            // case identical
-            if (asset.assetNftContract == assetToFind.assetNftContract
-            && asset.tokenId == assetToFind.tokenId
-                && asset.beneficiary == assetToFind.beneficiary) {
-                return true;
-            }
-            // case modified, i.e. only beneficiary changed
-            if (asset.assetNftContract == assetToFind.assetNftContract
-            && asset.tokenId == assetToFind.tokenId
-                && asset.beneficiary != assetToFind.beneficiary) {
-
-                // update the assets Assets.beneficiary field
-                assets[i].beneficiary = assetToFind.beneficiary;
-
+            // hash and compare assetId strings in memory
+            if (keccak256(abi.encodePacked(asset.assetId)) == keccak256(abi.encodePacked(assetToFind.assetId))) {
                 return true;
             }
         }
-        // case completely different, i.e. no match at all
         return false;
-    }
-
-    function abs(int x) private pure returns (int) {
-        return x >= 0 ? x : -x;
     }
 
     function editAssets(Asset[] memory newWillAssets) public onlyWillOwner activeWill returns (bool) {
@@ -122,6 +107,7 @@ contract Will {
             Asset memory newAsset = newWillAssets[i];
             // ensure assetNftContract or beneficiary address is not 0 address
             require(newAsset.assetNftContract != address(0) || newAsset.beneficiary != address(0), "Asset Contract/ beneficiary cannot be zero address");
+
             if (!exists(assets, newAsset)) {
                 assets.push(newAsset);
 

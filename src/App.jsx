@@ -151,7 +151,7 @@ const App = ({ isServerInfo }) => {
       </Router>
       <Footer style={{ textAlign: "center" }}>
         <Text style={{ display: "block" }}>
-          📖 Built using{" "}
+          📖 Built with{" "}
           <a
             target="_blank"
             rel="noopener noreferrer"
