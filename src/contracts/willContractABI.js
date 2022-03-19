@@ -1,14 +1,74 @@
 export const willContractABI = [
   {
+    anonymous: false,
     inputs: [
       {
+        indexed: false,
         internalType: "address",
-        name: "beneficiaryAdd",
+        name: "willOwner",
         type: "address",
+      },
+    ],
+    name: "WillCreated",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "willOwner",
+        type: "address",
+      },
+    ],
+    name: "WillDestroyed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "willOwner",
+        type: "address",
+      },
+    ],
+    name: "WillEdited",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "govAdd",
+        type: "address",
+      },
+    ],
+    name: "WillExecuted",
+    type: "event",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    name: "assets",
+    outputs: [
+      {
+        internalType: "string",
+        name: "assetId",
+        type: "string",
       },
       {
         internalType: "address",
-        name: "assetNFTcontract",
+        name: "assetNftContract",
         type: "address",
       },
       {
@@ -16,8 +76,46 @@ export const willContractABI = [
         name: "tokenId",
         type: "uint256",
       },
+      {
+        internalType: "address",
+        name: "beneficiary",
+        type: "address",
+      },
     ],
-    name: "createWill",
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "assetId",
+            type: "string",
+          },
+          {
+            internalType: "address",
+            name: "assetNftContract",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "beneficiary",
+            type: "address",
+          },
+        ],
+        internalType: "struct Will.Asset[]",
+        name: "willAssets",
+        type: "tuple[]",
+      },
+    ],
+    name: "createAssets",
     outputs: [
       {
         internalType: "bool",
@@ -42,7 +140,35 @@ export const willContractABI = [
     type: "function",
   },
   {
-    inputs: [],
+    inputs: [
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "assetId",
+            type: "string",
+          },
+          {
+            internalType: "address",
+            name: "assetNftContract",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "beneficiary",
+            type: "address",
+          },
+        ],
+        internalType: "struct Will.Asset[]",
+        name: "newWillAssets",
+        type: "tuple[]",
+      },
+    ],
     name: "editAssets",
     outputs: [
       {
@@ -68,61 +194,35 @@ export const willContractABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "willOwnerAddress",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "govAddress",
-        type: "address",
-      },
-    ],
-    name: "init",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "assets",
+    inputs: [],
+    name: "getAssets",
     outputs: [
       {
-        internalType: "address",
-        name: "assetNFTcontract",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
+        components: [
+          {
+            internalType: "string",
+            name: "assetId",
+            type: "string",
+          },
+          {
+            internalType: "address",
+            name: "assetNftContract",
+            type: "address",
+          },
+          {
+            internalType: "uint256",
+            name: "tokenId",
+            type: "uint256",
+          },
+          {
+            internalType: "address",
+            name: "beneficiary",
+            type: "address",
+          },
+        ],
+        internalType: "struct Will.Asset[]",
         name: "",
-        type: "uint256",
-      },
-    ],
-    name: "beneficiaries",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
+        type: "tuple[]",
       },
     ],
     stateMutability: "view",
@@ -139,6 +239,24 @@ export const willContractABI = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "willOwnerAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "govAddress",
+        type: "address",
+      },
+    ],
+    name: "init",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
