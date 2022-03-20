@@ -1,6 +1,9 @@
 import {
+  CheckCircleOutlined,
+  CheckCircleTwoTone,
   CreditCardOutlined,
   DeleteOutlined,
+  DeleteTwoTone,
   FileSearchOutlined,
   NumberOutlined,
   SendOutlined,
@@ -18,9 +21,10 @@ import {
   Empty,
   Spin,
   Space,
+  Alert,
 } from "antd";
 import Text from "antd/lib/typography/Text";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useMoralis, useNFTBalances, useWeb3Contract } from "react-moralis";
 import { useVerifyMetadata } from "../../../hooks/useVerifyMetadata";
 import Meta from "antd/es/card/Meta";
@@ -29,7 +33,7 @@ import _ from "lodash";
 import { willContractABI } from "../../../contracts/willContractABI";
 import { assetNftContractABI } from "../../../contracts/assetNftContracABI";
 import { NavLink } from "react-router-dom";
-import { blue, grey, red, volcano, geekblue } from "@ant-design/colors";
+import { blue, green, grey, red, volcano, geekblue } from "@ant-design/colors";
 import { v4 as uuidv4 } from "uuid";
 import { willFactoryContractABI } from "../../../contracts/willFactoryContractABI";
 import Address from "../../Address/Address";
@@ -69,6 +73,12 @@ const styles = {
   },
 };
 
+const LoadingState = {
+  INITIAL: "Initial",
+  LOADING: "Loading",
+  COMPLETE: "Complete",
+};
+
 // TODO: Remove hardcode and find a way to fetch will address associated with this user's wallet address
 // const willContractAddress = "0x00Be4D5F09ede0a7e6Eb6354f3413c106Babf450";
 
@@ -78,7 +88,7 @@ function CreateWillForm() {
   const [willContractAddress, setWillContractAddress] = useState();
   const [selectedNFTs, setSelectedNFTs] = useState([]);
   const [connectedAddress, setConnectedAddress] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(LoadingState.INITIAL);
   const [isApprovalPending, setIsApprovalPending] = useState(false);
   const [isEditing, setIsEditing] = useState(true);
   const [isFormComplete, setIsFormComplete] = useState(false);
@@ -94,9 +104,6 @@ function CreateWillForm() {
   ]);
   const [approvals, setApprovals] = useState([]);
 
-  const [beneficiaryAdd, setBeneficiaryAdd] = useState();
-  const [assetContractAdd, setAssetContractAdd] = useState();
-  const [tokenId, setTokenId] = useState();
   const [isNftApproved, setIsNftApproved] = useState(false);
   const [txHash, setTxHash] = useState();
 
@@ -104,8 +111,6 @@ function CreateWillForm() {
 
   /*  Modal States */
   const [isModalVisible, setIsModalVisible] = useState(false);
-
-  /* fetch will contract address associated with this user  */
 
   /* Modal functions */
   const showModal = () => {
@@ -117,7 +122,7 @@ function CreateWillForm() {
     checkFormComplete();
   });
 
-  // fetch will contract address
+  // fetch will contract address associated with this account
   useEffect(() => {
     const fetchData = async () => {
       await fetchWillContractAddress();
@@ -158,6 +163,11 @@ function CreateWillForm() {
     if (account) fetchApprovals();
     // eslint-disable-next-line
   }, [assets, account]);
+
+  const isZeroAddress = useMemo(
+    () => willContractAddress === "0x0000000000000000000000000000000000000000",
+    [willContractAddress],
+  );
 
   const fetchWillContractAddress = async () => {
     const fetchWillContractTxMsg = await Moralis.executeFunction({
@@ -268,62 +278,52 @@ function CreateWillForm() {
   };
 
   const handleSubmit = async () => {
-    // input checks
-    console.log("BA", beneficiaryAdd);
-    console.log("nftAdd", assetContractAdd);
-    console.log("tokenId", tokenId);
+    // map assets into a tuple format
+    const assetsToSubmit = assets.map((asset) => Object.values(asset));
+    console.log("tuple array: ", assetsToSubmit);
 
     try {
       // execute function using moralisAPI
-      const createWillTx = await Moralis.executeFunction({
+      const createAssetsTx = await Moralis.executeFunction({
         contractAddress: willContractAddress,
-        functionName: "createWill",
+        functionName: "createAssets",
         abi: willContractABI,
         params: {
-          beneficiaryAdd: beneficiaryAdd,
-          assetNFTcontract: assetContractAdd,
-          tokenId: tokenId,
+          willAssets: assetsToSubmit,
         },
       });
 
-      setLoading(true);
-      setTxHash(createWillTx.hash);
-      console.log("tx hash ", createWillTx.hash);
-      await createWillTx.wait();
+      setLoading(LoadingState.LOADING);
+      setTxHash(createAssetsTx.hash);
+      console.log("tx hash ", createAssetsTx.hash);
+      await createAssetsTx.wait();
 
-      // check if beneficiary has been added to the contract
-      const createWillTxMsg = await Moralis.executeFunction({
+      // TODO: check for WillCreated event instead
+      const createAssetsTxMsg = await Moralis.executeFunction({
         contractAddress: willContractAddress,
-        functionName: "assets",
+        functionName: "getAssets",
         abi: willContractABI,
-        params: { "": beneficiaryAdd },
       });
 
-      console.log(createWillTxMsg);
+      console.log(createAssetsTxMsg);
 
       message.success(
-        `Successfully created will for beneficiary: ${truncateEthAddress(
-          beneficiaryAdd,
+        `Successfully created assets to will: ${truncateEthAddress(
+          willContractAddress,
         )}!`,
       );
 
-      setBeneficiaryAdd(undefined);
-      setAssetContractAdd(undefined);
-      setLoading(false);
+      setLoading(LoadingState.COMPLETE);
     } catch (error) {
       console.log("Error creating will: ", error);
-      setLoading(false);
+      setLoading(LoadingState.COMPLETE);
     }
   };
 
-  useEffect(() => {
-    console.log(" useEffect assetContract", assetContractAdd);
-  }, [assetContractAdd]);
-
   return (
     <div style={styles.card}>
-      {loading ? (
-        // show spinner
+      {loading === LoadingState.LOADING || loading === LoadingState.COMPLETE ? (
+        // show spinner or complete
         <div
           style={{
             display: "flex",
@@ -333,24 +333,56 @@ function CreateWillForm() {
             marginTop: "25px",
           }}
         >
-          <div style={{ textAlign: "center" }}>Creating Will...</div>
-          <div style={{ textAlign: "center", fontWeight: "normal" }}>
-            View transaction{" "}
-            <a
-              href={`https://rinkeby.etherscan.io/tx/${txHash}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              here
-            </a>
-          </div>
+          {loading === LoadingState.LOADING ? (
+            <div>
+              <div style={{ textAlign: "center" }}>Creating Assets...</div>
+              <div style={{ textAlign: "center", fontWeight: "normal" }}>
+                View transaction on{" "}
+                <a
+                  href={`https://rinkeby.etherscan.io/tx/${txHash}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  etherscan
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div style={{ textAlign: "center" }}>Assets Created!</div>
+              <div style={{ textAlign: "center", fontWeight: "normal" }}>
+                View will <NavLink to={"/view"}>here</NavLink> or on{" "}
+                <a
+                  href={`https://rinkeby.etherscan.io/address/${willContractAddress}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  etherscan
+                </a>
+              </div>
+            </div>
+          )}
           <div style={{ marginTop: "50px", marginBottom: "50px" }}>
-            <Spin size="large" />
+            {loading === LoadingState.LOADING ? (
+              <Spin size="large" />
+            ) : (
+              <CheckCircleTwoTone
+                style={{ fontSize: "2.5rem" }}
+                twoToneColor={blue[2]}
+              />
+            )}
           </div>
         </div>
       ) : (
         //  show create will form
         <div>
+          <Alert
+            description="Gov acc must create a will contract, and specify this
+                account as a will owner first"
+            type="warning"
+            closable
+            style={{ marginBottom: "1.5rem" }}
+          />
           <div style={styles.header}>
             <h3>Create Assets</h3>
             <Space direction="vertical">
@@ -361,193 +393,223 @@ function CreateWillForm() {
                   <Address size="6" copyable address={willContractAddress} />
                 </Space>
               )}
-
-              <Text type="danger">
-                {" "}
-                ---- Gov acc must create a will contract, and specify this
-                account as a will owner first ----{" "}
-              </Text>
             </Space>
           </div>
 
-          {/* Display will form as cards */}
-          {assets.map((asset, index) => (
-            <Card style={{ marginTop: "1rem" }} key={index}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <Text strong>Asset #{index + 1}</Text>
-                <DeleteOutlined
-                  style={{ color: red[3], fontSize: "large" }}
-                  onClick={() => handleDelete(index)}
-                />
-              </div>
+          {isZeroAddress && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "25px",
+              }}
+            >
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <span>
+                    Will not created for this account <br /> Use Gov address to
+                    create one
+                  </span>
+                }
+              />
+            </div>
+          )}
 
-              <div style={styles.select}>
-                <div style={styles.textWrapper}>
-                  <Text strong>Recipient:</Text>
-                </div>
-                <Input
-                  size="large"
-                  prefix={<FileSearchOutlined />}
-                  autoFocus
-                  value={beneficiaryAdd}
-                  onChange={(e) => {
-                    // setBeneficiaryAdd(e.target.value);
-                    let newAssets = [...assets];
-                    newAssets[index].beneficiary = e.target.value;
-                    setAssets(newAssets);
-                  }}
-                  placeholder="Enter beneficiary address"
-                  allowClear={true}
-                />
-              </div>
+          {!isZeroAddress && (
+            <div>
+              {/* Display will form as cards */}
+              {assets.map((asset, index) => (
+                <Card style={{ marginTop: "1rem" }} key={index}>
+                  <div
+                    style={{ display: "flex", justifyContent: "space-between" }}
+                  >
+                    <Text strong>Asset #{index + 1}</Text>
+                    <DeleteTwoTone
+                      twoToneColor={red[3]}
+                      style={{ fontSize: "large" }}
+                      onClick={() => handleDelete(index)}
+                    />
+                  </div>
 
-              {/* asset token info */}
-              {assets[index].assetNftContract ? (
-                <div>
                   <div style={styles.select}>
                     <div style={styles.textWrapper}>
-                      <Text strong>Asset: </Text>
+                      <Text strong>Recipient:</Text>
                     </div>
-
                     <Input
                       size="large"
                       prefix={<FileSearchOutlined />}
                       autoFocus
-                      value={truncateEthAddress(assets[index].assetNftContract)}
-                      disabled
-                    />
-                  </div>
-                  <div style={styles.select}>
-                    <div style={styles.textWrapper}>
-                      <Text strong>Token ID:</Text>
-                    </div>
-                    <Input
-                      size="large"
-                      prefix={<NumberOutlined />}
-                      autoFocus
-                      value={assets[index].tokenId}
-                      disabled
+                      value={asset.beneficiary}
+                      onChange={(e) => {
+                        // setBeneficiaryAdd(e.target.value);
+                        let newAssets = [...assets];
+                        newAssets[index].beneficiary = e.target.value;
+                        setAssets(newAssets);
+                      }}
+                      placeholder="Enter beneficiary address"
+                      allowClear={true}
                     />
                   </div>
 
-                  {/* Approve all NFTs if they aren't approved yet   */}
-                  {/*TODO: this approval check is sus, need a better way to check it*/}
-                  {!approvals[index] && (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        padding: "20px",
-                        border: "0.5px",
-                        borderStyle: "solid",
-                        borderColor: "lightgray",
-                        borderRadius: "3px",
-                        marginTop: "20px",
-                      }}
-                    >
-                      <Text
-                        type="secondary"
-                        style={{ fontWeight: "normal", textAlign: "left" }}
-                      >
-                        NFTs need to be approved
-                      </Text>
+                  {/* asset token info */}
+                  {assets[index].assetNftContract ? (
+                    <div>
+                      <div style={styles.select}>
+                        <div style={styles.textWrapper}>
+                          <Text strong>Asset: </Text>
+                        </div>
+
+                        <Input
+                          size="large"
+                          prefix={<FileSearchOutlined />}
+                          autoFocus
+                          value={truncateEthAddress(
+                            assets[index].assetNftContract,
+                          )}
+                          disabled
+                        />
+                      </div>
+                      <div style={styles.select}>
+                        <div style={styles.textWrapper}>
+                          <Text strong>Token ID:</Text>
+                        </div>
+                        <Input
+                          size="large"
+                          prefix={<NumberOutlined />}
+                          autoFocus
+                          value={assets[index].tokenId}
+                          disabled
+                        />
+                      </div>
+
+                      {/* Approve all NFTs if they aren't approved yet   */}
+                      {/*TODO: this approval check is sus, need a better way to check it*/}
+                      {!approvals[index] && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            padding: "20px",
+                            border: "0.5px",
+                            borderStyle: "solid",
+                            borderColor: "lightgray",
+                            borderRadius: "3px",
+                            marginTop: "20px",
+                          }}
+                        >
+                          <Text
+                            type="secondary"
+                            style={{ fontWeight: "normal", textAlign: "left" }}
+                          >
+                            NFTs need to be approved
+                          </Text>
+                          <Button
+                            type="primary"
+                            size="medium"
+                            loading={isApprovalPending}
+                            style={{
+                              marginLeft: "1rem",
+                              textAlign: "center",
+                            }}
+                            onClick={async () => {
+                              await approveAllNfts(
+                                assets[index].assetNftContract,
+                              );
+                              let newApprovals = [...approvals];
+                              newApprovals[index] = true;
+                              setApprovals(newApprovals);
+                            }}
+                          >
+                            Approve
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", justifyContent: "center" }}>
                       <Button
-                        type="primary"
-                        size="medium"
-                        loading={isApprovalPending}
+                        type="secondary"
+                        size="large"
                         style={{
-                          marginLeft: "1rem",
-                          textAlign: "center",
+                          width: "auto",
+                          marginTop: "25px",
+                          color: geekblue[3],
+                          borderColor: geekblue[4],
+                          borderRadius: "0.3rem",
                         }}
-                        onClick={async () => {
-                          await approveAllNfts(assets[index].assetNftContract);
-                          let newApprovals = [...approvals];
-                          newApprovals[index] = true;
-                          setApprovals(newApprovals);
-                        }}
+                        onClick={showModal} // disabled={}
                       >
-                        Approve
+                        Select Asset NFT
                       </Button>
                     </div>
                   )}
-                </div>
-              ) : (
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                  <Button
-                    type="secondary"
-                    size="large"
-                    loading={loading}
-                    style={{
-                      width: "auto",
-                      marginTop: "25px",
-                      color: geekblue[3],
-                      borderColor: geekblue[4],
-                    }}
-                    onClick={showModal} // disabled={}
-                  >
-                    Select Asset NFT
-                  </Button>
-                </div>
-              )}
 
-              {isModalVisible && (
-                <AssetModal
-                  setIsModalVisible={setIsModalVisible}
-                  NFTBalances={NFTBalances}
-                  // verifyMetadata={verifyMetadata}
-                  assetCardIndex={index}
-                  assets={assets}
-                  setAssets={setAssets}
-                  selectedNFTs={selectedNFTs}
-                  setSelectedNFTs={setSelectedNFTs}
-                  checkNftApproval={checkNftApproval}
-                  setIsEditing={setIsEditing}
-                />
-              )}
-            </Card>
-          ))}
+                  {isModalVisible && (
+                    <AssetModal
+                      setIsModalVisible={setIsModalVisible}
+                      NFTBalances={NFTBalances}
+                      // verifyMetadata={verifyMetadata}
+                      assetCardIndex={index}
+                      assets={assets}
+                      setAssets={setAssets}
+                      selectedNFTs={selectedNFTs}
+                      setSelectedNFTs={setSelectedNFTs}
+                      checkNftApproval={checkNftApproval}
+                      setIsEditing={setIsEditing}
+                    />
+                  )}
+                </Card>
+              ))}
 
-          <Button
-            type="text"
-            size="large"
-            style={{
-              width: "100%",
-              marginTop: "25px",
-              color:
-                isEditing ||
-                assetNum >= 10 ||
-                selectedNFTs.length === NFTBalances?.result.length
-                  ? ""
-                  : blue.primary,
-            }}
-            disabled={
-              isEditing ||
-              assetNum >= 10 ||
-              selectedNFTs.length === NFTBalances?.result.length
-            }
-            onClick={() => {
-              handleAdd();
-              setIsEditing(true);
-              console.log(assets);
-              console.log("approvals", approvals);
-              console.log("NFT balance array ", NFTBalances?.result);
-            }}
-          >
-            + More Assets
-          </Button>
+              <Button
+                type="text"
+                size="large"
+                style={{
+                  width: "100%",
+                  marginTop: "25px",
+                  color:
+                    isEditing ||
+                    assetNum >= 10 ||
+                    selectedNFTs.length === NFTBalances?.result.length
+                      ? ""
+                      : blue.primary,
+                }}
+                disabled={
+                  isEditing ||
+                  assetNum >= 10 ||
+                  selectedNFTs.length === NFTBalances?.result.length
+                }
+                onClick={() => {
+                  handleAdd();
+                  setIsEditing(true);
+                  console.log(assets);
+                  console.log("approvals", approvals);
+                  console.log("NFT balance array ", NFTBalances?.result);
+                }}
+              >
+                + More Assets
+              </Button>
 
-          <Button
-            type="primary"
-            size="large"
-            loading={loading}
-            style={{ width: "100%", marginTop: "25px" }}
-            onClick={handleSubmit}
-            disabled={!isFormComplete}
-          >
-            Create Assets <SendOutlined />
-          </Button>
+              <Button
+                type="primary"
+                size="large"
+                loading={loading === LoadingState.LOADING && true}
+                style={{
+                  width: "100%",
+                  marginTop: "25px",
+                  borderRadius: "0.3rem",
+                }}
+                onClick={handleSubmit}
+                disabled={!isFormComplete}
+              >
+                Create Assets <SendOutlined />
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
+  useHistory,
 } from "react-router-dom";
 import Account from "components/Account/Account";
 import Chains from "components/Chains";
@@ -14,7 +15,7 @@ import ERC20Transfers from "components/ERC20Transfers";
 import DEX from "components/DEX";
 import NFTBalance from "components/NFTBalance";
 import Wallet from "components/Wallet";
-import { Layout, Tabs } from "antd";
+import { Layout, Tabs, Switch as AntdSwitch } from "antd";
 import "antd/dist/antd.css";
 import NativeBalance from "components/NativeBalance";
 import "./style.css";
@@ -63,6 +64,7 @@ const App = ({ isServerInfo }) => {
   const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading } =
     useMoralis();
 
+  const [isGovAccount, setIsGovAccount] = useState(false);
   useEffect(() => {
     const connectorId = window.localStorage.getItem("connectorId");
     if (isAuthenticated && !isWeb3Enabled && !isWeb3EnableLoading)
@@ -74,8 +76,14 @@ const App = ({ isServerInfo }) => {
     <Layout style={{ height: "100vh", overflow: "auto" }}>
       <Router>
         <Header style={styles.header}>
-          <Logo />
-          <MenuItems />
+          <AntdSwitch
+            style={{ marginLeft: "4rem" }}
+            defaultChecked={false}
+            onClick={() => {
+              setIsGovAccount(!isGovAccount);
+            }}
+          />
+          <MenuItems isGovAccount={isGovAccount} />
           <div style={styles.headerRight}>
             <Chains />
             <NativeBalance />

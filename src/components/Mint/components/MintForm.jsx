@@ -12,6 +12,7 @@ import {
   message,
   Select,
   Spin,
+  Alert,
 } from "antd";
 import Text from "antd/lib/typography/Text";
 import React, { useEffect, useState } from "react";
@@ -208,12 +209,14 @@ function MintForm() {
       ) : (
         //  show mint form
         <div style={styles.tranfer}>
+          <Alert
+            description="Only available for Gov address"
+            type="warning"
+            closable
+            style={{ marginBottom: "1.5rem" }}
+          />
           <div style={styles.header}>
             <h3>Mint Asset NFT</h3>
-            <p style={{ color: "red", fontWeight: "normal" }}>
-              {" "}
-              ---- Only available for gov address! ----{" "}
-            </p>
           </div>
           <div style={styles.select}>
             <div style={styles.textWrapper}>
@@ -313,7 +316,7 @@ function MintForm() {
             type="primary"
             size="large"
             loading={loading}
-            style={{ width: "100%", marginTop: "25px" }}
+            style={{ width: "100%", marginTop: "25px", borderRadius: "0.3rem" }}
             onClick={mintNFT}
             disabled={!recipientAdd || !fileUrl || !asset}
           >

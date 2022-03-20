@@ -3,7 +3,7 @@ import { Menu } from "antd";
 import { NavLink } from "react-router-dom";
 import { useEffect } from "react";
 
-function MenuItems() {
+function MenuItems({ isGovAccount }) {
   const { pathname } = useLocation();
 
   return (
@@ -20,20 +20,20 @@ function MenuItems() {
       selectedKeys={pathname}
       defaultSelectedKeys={[pathname]}
     >
-      <Menu.Item key="/nftBalance">
-        <NavLink to="/nftBalance">Assets</NavLink>
-      </Menu.Item>
-      <Menu.Item key="/create">
+      <Menu.Item key="/create" disabled={isGovAccount}>
         <NavLink to="/create">Create</NavLink>
       </Menu.Item>
-      <Menu.Item key="/view">
+      <Menu.Item key="/view" disabled={isGovAccount}>
         <NavLink to="/view">View</NavLink>
       </Menu.Item>
-      <Menu.Item key="/mint">
-        <NavLink to="/mint">Mint (Gov)</NavLink>
+      <Menu.Item key="/mint" disabled={!isGovAccount}>
+        <NavLink to="/mint">Mint</NavLink>
       </Menu.Item>
-      <Menu.Item key="/execute">
-        <NavLink to="/execute">Execute (Gov) </NavLink>
+      <Menu.Item key="/execute" disabled={!isGovAccount}>
+        <NavLink to="/execute">Execute</NavLink>
+      </Menu.Item>
+      <Menu.Item key="/nftBalance">
+        <NavLink to="/nftBalance">Assets</NavLink>
       </Menu.Item>
 
       {/*  Unused nav links */}

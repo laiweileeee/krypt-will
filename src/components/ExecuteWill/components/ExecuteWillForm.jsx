@@ -1,5 +1,5 @@
 import { CreditCardOutlined, FileSearchOutlined } from "@ant-design/icons";
-import { Button, Input, message, notification, Spin } from "antd";
+import { Alert, Button, Input, message, notification, Spin } from "antd";
 import Text from "antd/lib/typography/Text";
 import React, { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
@@ -103,7 +103,8 @@ function ExecuteWillForm() {
           }}
         >
           <div style={{ textAlign: "center" }}>
-            Executing will at {truncateEthAddress(willContractAdd)}...
+            Executing will at{" "}
+            {willContractAdd ? truncateEthAddress(willContractAdd) : ""}...
           </div>
           <div style={{ textAlign: "center", fontWeight: "normal" }}>
             View transaction{" "}
@@ -122,12 +123,14 @@ function ExecuteWillForm() {
       ) : (
         //  show execute will form
         <div>
+          <Alert
+            description="Only available for gov address, ONCE per will address."
+            type="warning"
+            closable
+            style={{ marginBottom: "1.5rem" }}
+          />
           <div style={styles.header}>
             <h3>Execute will </h3>
-            <p style={{ color: "red", fontWeight: "normal" }}>
-              {" "}
-              ---- Only available ONCE for gov address! ----{" "}
-            </p>{" "}
           </div>
 
           <div style={styles.select}>
@@ -149,7 +152,7 @@ function ExecuteWillForm() {
             type="primary"
             size="large"
             loading={loading}
-            style={{ width: "100%", marginTop: "25px" }}
+            style={{ width: "100%", marginTop: "25px", borderRadius: "0.3rem" }}
             onClick={executeWill}
             disabled={!willContractAdd}
           >
