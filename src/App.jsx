@@ -55,7 +55,6 @@ const styles = {
 const App = ({ isServerInfo }) => {
   const { isWeb3Enabled, enableWeb3, isAuthenticated, isWeb3EnableLoading } =
     useMoralis();
-
   const [isGovAccount, setIsGovAccount] = useState(false);
   useEffect(() => {
     const connectorId = window.localStorage.getItem("connectorId");
@@ -76,7 +75,9 @@ const App = ({ isServerInfo }) => {
                 setIsGovAccount(!isGovAccount);
               }}
             />
-            <p style={{ display: "flex", width: 200 }}>Toggle Gov Mode</p>
+            <p style={{ display: "flex", width: 200 }}>
+              {isGovAccount ? "Gov" : "Will Owner"}
+            </p>
           </Space>
           <MenuItems isGovAccount={isGovAccount} />
           <div style={styles.headerRight}>

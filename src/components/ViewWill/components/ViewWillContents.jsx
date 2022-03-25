@@ -1,6 +1,5 @@
 import {
   CheckCircleTwoTone,
-  CreditCardOutlined,
   DeleteTwoTone,
   FileSearchOutlined,
   NumberOutlined,
@@ -8,7 +7,6 @@ import {
 import {
   Button,
   Input,
-  notification,
   Spin,
   Space,
   Card,
@@ -486,7 +484,8 @@ function ViewWillContents() {
                         <NavLink
                           to={"/view"}
                           onClick={() => {
-                            window.location.reload(false);
+                            window.location.reload(true);
+                            fetchWill();
                           }}
                         >
                           here
@@ -582,10 +581,11 @@ function ViewWillContents() {
                               >
                                 <Space direction="vertical">
                                   <Text strong>Asset</Text>
-                                  <Text>
-                                    {" "}
-                                    {truncateEthAddress(asset.assetNftContract)}
-                                  </Text>
+                                  <Address
+                                    size={4}
+                                    copyable
+                                    address={asset.assetNftContract}
+                                  />
                                 </Space>
                                 <DeleteTwoTone
                                   twoToneColor={red[3]}
@@ -596,11 +596,13 @@ function ViewWillContents() {
                                 />
                               </div>
                               <Text strong>Token ID</Text>
-                              <Text>{asset.tokenId}</Text>
+                              <Text type="secondary">{asset.tokenId}</Text>
                               <Text strong>Beneficiary</Text>
-                              <Text>
-                                {truncateEthAddress(asset.beneficiary)}
-                              </Text>
+                              <Address
+                                size={3}
+                                copyable
+                                address={asset.beneficiary}
+                              />
                             </Space>
                           </Card>
                         ))
@@ -765,8 +767,7 @@ function ViewWillContents() {
                       {isModalVisible && (
                         <AssetModal
                           setIsModalVisible={setIsModalVisible}
-                          NFTBalances={NFTBalances}
-                          // verifyMetadata={verifyMetadata}
+                          // NFTBalances={NFTBalances}
                           assetCardIndex={index}
                           assets={addedAssets}
                           setAssets={setAddedAssets}
@@ -902,7 +903,6 @@ function ViewWillContents() {
 
 const AssetModal = ({
   setIsModalVisible,
-  NFTBalances,
   // verifyMetadata,
   assetCardIndex,
   assets,
@@ -913,15 +913,19 @@ const AssetModal = ({
   setIsEditing,
 }) => {
   // copy the actual NFT balance
-  const [NFTs, setNFTs] = useState([]);
-
-  useEffect(
-    () => setNFTs(_.difference([...NFTBalances?.result], selectedNFTs)),
-    [NFTBalances, selectedNFTs],
+  const [loading, setLoading] = useState(true);
+  const { data: NFTBalances } = useNFTBalances();
+  const [NFTs, setNFTs] = useState(
+    NFTBalances?.result && _.difference([...NFTBalances?.result], selectedNFTs),
   );
-  //
-  // console.log("selected NFTs: ", selectedNFTs);
-  // console.log("nfts: ", [...NFTBalances.result]);
+
+  useEffect(() => {
+    if (NFTBalances?.result) {
+      setLoading(true);
+      setNFTs(_.difference([...NFTBalances?.result], selectedNFTs));
+      setLoading(false);
+    }
+  }, [NFTBalances, selectedNFTs]);
 
   return (
     <Modal
@@ -936,7 +940,12 @@ const AssetModal = ({
         maxWidth: "800px",
       }}
     >
-      {!NFTs?.length ? (
+      {loading ? ( // show fetch loader
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Spin size="large" />
+        </div>
+      ) : !NFTs?.length ? (
+        // show assets
         <div
           style={{
             display: "flex",

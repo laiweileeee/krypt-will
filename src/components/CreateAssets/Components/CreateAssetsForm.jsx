@@ -1,13 +1,9 @@
 import {
-  CheckCircleOutlined,
   CheckCircleTwoTone,
-  CreditCardOutlined,
-  DeleteOutlined,
   DeleteTwoTone,
   FileSearchOutlined,
   NumberOutlined,
   SendOutlined,
-  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -15,8 +11,6 @@ import {
   Image,
   Input,
   Modal,
-  Skeleton,
-  Tooltip,
   message,
   Empty,
   Spin,
@@ -25,14 +19,12 @@ import {
 } from "antd";
 import Text from "antd/lib/typography/Text";
 import React, { useEffect, useMemo, useState } from "react";
-import { useMoralis, useNFTBalances, useWeb3Contract } from "react-moralis";
-import { useVerifyMetadata } from "../../../hooks/useVerifyMetadata";
-import Meta from "antd/es/card/Meta";
+import { useMoralis, useNFTBalances } from "react-moralis";
 import { truncateEthAddress } from "../../../utils/TruffleEthAddress";
 import _ from "lodash";
 import { willContractABI } from "../../../contracts/willContractABI";
 import { assetNftContractABI } from "../../../contracts/assetNftContracABI";
-import { NavLink } from "react-router-dom";
+import { NavLink, useHistory } from "react-router-dom";
 import { blue, green, grey, red, volcano, geekblue } from "@ant-design/colors";
 import { v4 as uuidv4 } from "uuid";
 import { willFactoryContractABI } from "../../../contracts/willFactoryContractABI";
@@ -79,9 +71,6 @@ const LoadingState = {
   COMPLETE: "Complete",
 };
 
-// TODO: Remove hardcode and find a way to fetch will address associated with this user's wallet address
-// const willContractAddress = "0x00Be4D5F09ede0a7e6Eb6354f3413c106Babf450";
-
 function CreateAssetsForm() {
   const { Moralis, account, isAuthenticated } = useMoralis();
   const { data: NFTBalances } = useNFTBalances();
@@ -103,8 +92,6 @@ function CreateAssetsForm() {
   ]);
   const [approvals, setApprovals] = useState([]);
   const [txHash, setTxHash] = useState();
-
-  // const { verifyMetadata } = useVerifyMetadata();
 
   /*  Modal States */
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -528,7 +515,7 @@ function CreateAssetsForm() {
                   {isModalVisible && (
                     <AssetModal
                       setIsModalVisible={setIsModalVisible}
-                      NFTBalances={NFTBalances}
+                      // NFTBalances={NFTBalances}
                       // verifyMetadata={verifyMetadata}
                       assetCardIndex={index}
                       assets={assets}
@@ -617,8 +604,6 @@ function CreateAssetsForm() {
 
 const AssetModal = ({
   setIsModalVisible,
-  NFTBalances,
-  // verifyMetadata,
   assetCardIndex,
   assets,
   setAssets,
@@ -628,12 +613,19 @@ const AssetModal = ({
   setIsEditing,
 }) => {
   // copy the actual NFT balance
+  const [loading, setLoading] = useState(true);
+  const { data: NFTBalances } = useNFTBalances();
   const [NFTs, setNFTs] = useState(
-    _.difference([...NFTBalances?.result], selectedNFTs),
+    NFTBalances?.result && _.difference([...NFTBalances?.result], selectedNFTs),
   );
 
-  // console.log("selected NFTs: ", selectedNFTs);
-  // console.log("nfts: ", [...NFTBalances.result]);
+  useEffect(() => {
+    if (NFTBalances?.result) {
+      setLoading(true);
+      setNFTs(_.difference([...NFTBalances?.result], selectedNFTs));
+      setLoading(false);
+    }
+  }, [NFTBalances, selectedNFTs]);
 
   return (
     <Modal
@@ -648,7 +640,13 @@ const AssetModal = ({
         maxWidth: "800px",
       }}
     >
-      {!NFTs?.length ? (
+      {loading ? (
+        // show fetch loader
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <Spin size="large" />
+        </div>
+      ) : !NFTs?.length ? (
+        // show assets
         <div
           style={{
             display: "flex",
