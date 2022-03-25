@@ -102,8 +102,6 @@ function CreateAssetsForm() {
     },
   ]);
   const [approvals, setApprovals] = useState([]);
-
-  const [isNftApproved, setIsNftApproved] = useState(false);
   const [txHash, setTxHash] = useState();
 
   // const { verifyMetadata } = useVerifyMetadata();
@@ -200,7 +198,7 @@ function CreateAssetsForm() {
     let assetsClone = [...assets];
     console.log("selected ", newSelectedAssets);
     console.log("to Delete ", assets[index]);
-    const newestSelectedAssets = _.remove(
+    _.remove(
       newSelectedAssets,
       (asset) =>
         asset.token_address === assetsClone[index].assetNftContract &&
@@ -242,7 +240,6 @@ function CreateAssetsForm() {
       return setApprovalForAllTxMsg;
 
       console.log("setApprovalForAllTxMsg ", setApprovalForAllTxMsg);
-      setIsNftApproved(setApprovalForAllTxMsg);
     } catch (error) {
       console.log("Error checking NFT approval: ", error);
     }
@@ -406,7 +403,10 @@ function CreateAssetsForm() {
                     <DeleteTwoTone
                       twoToneColor={red[3]}
                       style={{ fontSize: "large" }}
-                      onClick={() => handleDelete(index)}
+                      onClick={() => {
+                        if (assets.length === 1) return;
+                        handleDelete(index);
+                      }}
                     />
                   </div>
 
@@ -631,7 +631,7 @@ const AssetModal = ({
   const [NFTs, setNFTs] = useState(
     _.difference([...NFTBalances?.result], selectedNFTs),
   );
-  //
+
   // console.log("selected NFTs: ", selectedNFTs);
   // console.log("nfts: ", [...NFTBalances.result]);
 

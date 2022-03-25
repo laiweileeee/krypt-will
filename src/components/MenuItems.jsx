@@ -36,8 +36,8 @@ function MenuItems({ isGovAccount }) {
       <Menu.Item key="/execute" disabled={!isGovAccount}>
         <NavLink to="/execute">Execute</NavLink>
       </Menu.Item>
-      <Menu.Item key="/nftBalance">
-        <NavLink to="/nftBalance">Assets</NavLink>
+      <Menu.Item key="/assets">
+        <NavLink to="/assets">Assets</NavLink>
       </Menu.Item>
 
       {/*  Unused nav links */}

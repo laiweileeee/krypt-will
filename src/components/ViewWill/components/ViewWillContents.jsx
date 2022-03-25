@@ -16,6 +16,7 @@ import {
   message,
   Empty,
   Alert,
+  Modal,
 } from "antd";
 import Text from "antd/lib/typography/Text";
 import React, { useEffect, useMemo, useState } from "react";
@@ -85,18 +86,32 @@ function ViewWillContents() {
   const [selectedNFTs, setSelectedNFTs] = useState([]);
   const [deletedAssets, setDeletedAssets] = useState([]);
   const [addedAssets, setAddedAssets] = useState([]);
+  const [addedAssetsApprovals, setAddedAssetsApprovals] = useState([]);
   const [connectedAddress, setConnectedAddress] = useState();
+
   const [loading, setLoading] = useState(LoadingState.INITIAL);
   const [isApprovalPending, setIsApprovalPending] = useState(false);
-  const [isEditing, setIsEditing] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [isFormComplete, setIsFormComplete] = useState(false);
   const [txHash, setTxHash] = useState(false);
 
-  const [assetNum, setAssetNum] = useState(1);
   const [originalAssetsLength, setOriginalAssetsLength] = useState(0);
   const [assets, setAssets] = useState([]);
 
-  // run upon existences of web3 instance
+  /*  Modal States */
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  /* Modal functions */
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  // check form completion
+  useEffect(() => {
+    checkFormComplete();
+  });
+
+  // run upon existence of web3 instance
   useEffect(() => {
     const fetchData = async () => {
       setLoading(LoadingState.FETCH_LOADING);
@@ -113,6 +128,38 @@ function ViewWillContents() {
     if (account) fetchData();
     // eslint-disable-next-line
   }, [isAuthenticated, account]);
+
+  // populate connectedAddress state when user's wallet is connected
+  useEffect(() => {
+    setConnectedAddress(isAuthenticated && account);
+  }, [account, isAuthenticated]);
+
+  // update approvals[]
+  useEffect(() => {
+    const fetchApprovals = async () => {
+      let newApprovals = [];
+      try {
+        const approvalPromises = addedAssets.map(async (asset) => {
+          const result = await checkNftApproval(asset.assetNftContract);
+          // console.log("result ", result);
+          return result;
+        });
+
+        newApprovals = await Promise.all(approvalPromises);
+        // console.log(newApprovals);
+      } catch (error) {
+        message.error(new Error(error).toString());
+        console.error("Fetch error ", error);
+      }
+      // console.log("assets", assets);
+      // console.log("newApprovals ", newApprovals);
+      setAddedAssetsApprovals(newApprovals);
+    };
+
+    // only fetch when there is a web3 instance
+    if (account) fetchApprovals();
+    // eslint-disable-next-line
+  }, [addedAssets, account]);
 
   const isZeroAddress = useMemo(
     () => willContractAddress === "0x0000000000000000000000000000000000000000",
@@ -170,12 +217,11 @@ function ViewWillContents() {
     console.log("parsed assets: ", fetchedAssets);
 
     setAssets(fetchedAssets);
-    setAssetNum(fetchedAssets.length);
     setOriginalAssetsLength(fetchedAssets.length);
     // setAssets(fetchedAssets);
   };
 
-  const handleAdd = () => {
+  const handleAddNewAssets = () => {
     const newAsset = {
       assetId: uuidv4(),
       assetNftContract: "",
@@ -183,8 +229,31 @@ function ViewWillContents() {
       beneficiary: "",
     };
 
-    setAssetNum(assetNum + 1);
     addedAssets.push(newAsset);
+  };
+
+  const handleDeleteNewAssets = (index) => {
+    console.log(index);
+    // delete selectedNFT
+    let newSelectedAssets = [...selectedNFTs];
+    let assetsClone = [...addedAssets];
+    console.log("selected ", newSelectedAssets);
+    console.log("to Delete ", addedAssets[index]);
+    _.remove(
+      newSelectedAssets,
+      (asset) =>
+        asset.token_address === assetsClone[index].assetNftContract &&
+        asset.token_id === assetsClone[index].tokenId,
+    );
+
+    console.log("new ", newSelectedAssets);
+    setSelectedNFTs(newSelectedAssets);
+
+    let newAssets = [...addedAssets];
+    newAssets.splice(index, 1);
+    setAddedAssets(newAssets);
+
+    setIsEditing(false);
   };
 
   const handleDelete = (index) => {
@@ -211,17 +280,19 @@ function ViewWillContents() {
     setAssets(newAssets);
 
     setIsEditing(false);
-    setAssetNum(assetNum - 1);
   };
 
   const handleSave = async () => {
     let assetClone = [...assets];
-    const assetsDiff = _.difference(assetClone, deletedAssets);
+    const assetsPostDeletion = _.difference(assetClone, deletedAssets);
+    const assetsPostAddition = _.concat(assetsPostDeletion, addedAssets);
 
-    console.log("assetsDiff ", assetsDiff);
+    console.log("assetsDiff ", assetsPostAddition);
     // map assets into a tuple format
     // const assetsToSubmit = [];
-    const assetsToSubmit = assetsDiff.map((asset) => Object.values(asset));
+    const assetsToSubmit = assetsPostAddition.map((asset) =>
+      Object.values(asset),
+    );
     console.log("tuple array: ", assetsToSubmit);
 
     try {
@@ -304,6 +375,62 @@ function ViewWillContents() {
     }
   };
 
+  const checkFormComplete = () => {
+    let checkAssets = [...addedAssets];
+    for (let i = 0; i < checkAssets.length; i++) {
+      const asset = checkAssets[i];
+      if (!asset.assetNftContract || !asset.tokenId || !asset.beneficiary) {
+        setIsFormComplete(false);
+        return;
+      }
+    }
+    setIsFormComplete(true);
+  };
+
+  const checkNftApproval = async (nftContractAddress) => {
+    try {
+      // Read from contract - check if intended state is updated
+      const setApprovalForAllTxMsg = await Moralis.executeFunction({
+        contractAddress: nftContractAddress,
+        functionName: "isApprovedForAll",
+        abi: assetNftContractABI,
+        params: { owner: connectedAddress, operator: willContractAddress },
+      });
+
+      return setApprovalForAllTxMsg;
+
+      console.log("setApprovalForAllTxMsg ", setApprovalForAllTxMsg);
+    } catch (error) {
+      console.log("Error checking NFT approval: ", error);
+    }
+  };
+
+  const approveAllNfts = async (assetNftContract) => {
+    try {
+      const setApprovalForAllTx = await Moralis.executeFunction({
+        contractAddress: assetNftContract,
+        functionName: "setApprovalForAll",
+        abi: assetNftContractABI,
+        params: {
+          operator: willContractAddress,
+          approved: true,
+        },
+      });
+
+      console.log(setApprovalForAllTx.hash);
+      setIsApprovalPending(true);
+      await setApprovalForAllTx.wait();
+
+      // Read from contract to check if intended state is updated
+      await checkNftApproval(assetNftContract);
+      message.success(`Approval Success!!`); // TODO: sometimes doesn't work
+      setIsApprovalPending(false);
+    } catch (error) {
+      console.log("Error approving NFTs: ", error);
+      setIsApprovalPending(false);
+    }
+  };
+
   return (
     <div style={styles.card}>
       {isExecuted ? (
@@ -358,7 +485,9 @@ function ViewWillContents() {
                         View assets{" "}
                         <NavLink
                           to={"/view"}
-                          onClick={() => window.location.reload(false)}
+                          onClick={() => {
+                            window.location.reload(false);
+                          }}
                         >
                           here
                         </NavLink>{" "}
@@ -461,7 +590,9 @@ function ViewWillContents() {
                                 <DeleteTwoTone
                                   twoToneColor={red[3]}
                                   style={{ fontSize: "large" }}
-                                  onClick={() => handleDelete(index)}
+                                  onClick={() => {
+                                    handleDelete(index);
+                                  }}
                                 />
                               </div>
                               <Text strong>Token ID</Text>
@@ -489,36 +620,195 @@ function ViewWillContents() {
                         </div>
                       )}
                     </div>
+                  </div>
 
-                    <Button
-                      type="text"
-                      size="large"
-                      style={{
-                        width: "100%",
-                        marginTop: "25px",
-                        color:
-                          isEditing ||
-                          addedAssets.length >= 10 ||
-                          selectedNFTs.length === NFTBalances?.result.length
-                            ? ""
-                            : blue.primary,
-                      }}
-                      disabled={
-                        // isEditing ||
+                  {/* Add assets section */}
+                  {addedAssets.map((asset, index) => (
+                    <Card style={{ marginTop: "1rem" }} key={index}>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                        }}
+                      >
+                        <Text strong>Asset #{index + 1}</Text>
+                        <DeleteTwoTone
+                          twoToneColor={red[3]}
+                          style={{ fontSize: "large" }}
+                          onClick={() => {
+                            handleDeleteNewAssets(index);
+                          }}
+                        />
+                      </div>
+
+                      <div style={styles.select}>
+                        <div style={styles.textWrapper}>
+                          <Text strong>Recipient:</Text>
+                        </div>
+                        <Input
+                          size="large"
+                          prefix={<FileSearchOutlined />}
+                          autoFocus
+                          value={asset.beneficiary}
+                          onChange={(e) => {
+                            let newAssets = [...addedAssets];
+                            newAssets[index].beneficiary = e.target.value;
+                            setAddedAssets(newAssets);
+                          }}
+                          placeholder="Enter beneficiary address"
+                          allowClear={true}
+                        />
+                      </div>
+
+                      {console.log("addedAssets []", addedAssets)}
+
+                      {/* display asset token info, if exists */}
+                      {addedAssets[index].assetNftContract ? (
+                        <div>
+                          <div style={styles.select}>
+                            <div style={styles.textWrapper}>
+                              <Text strong>Asset: </Text>
+                            </div>
+
+                            <Input
+                              size="large"
+                              prefix={<FileSearchOutlined />}
+                              autoFocus
+                              value={truncateEthAddress(
+                                addedAssets[index].assetNftContract,
+                              )}
+                              disabled
+                            />
+                          </div>
+                          <div style={styles.select}>
+                            <div style={styles.textWrapper}>
+                              <Text strong>Token ID:</Text>
+                            </div>
+                            <Input
+                              size="large"
+                              prefix={<NumberOutlined />}
+                              autoFocus
+                              value={addedAssets[index].tokenId}
+                              disabled
+                            />
+                          </div>
+
+                          {/* Approve all NFTs if they aren't approved yet   */}
+                          {/*TODO: this approval check is sus, need a better way to check it*/}
+                          {!addedAssetsApprovals[index] && (
+                            <div
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                padding: "20px",
+                                border: "0.5px",
+                                borderStyle: "solid",
+                                borderColor: "lightgray",
+                                borderRadius: "3px",
+                                marginTop: "20px",
+                              }}
+                            >
+                              <Text
+                                type="secondary"
+                                style={{
+                                  fontWeight: "normal",
+                                  textAlign: "left",
+                                }}
+                              >
+                                NFTs need to be approved
+                              </Text>
+                              <Button
+                                type="primary"
+                                size="medium"
+                                loading={isApprovalPending}
+                                style={{
+                                  marginLeft: "1rem",
+                                  textAlign: "center",
+                                }}
+                                onClick={async () => {
+                                  await approveAllNfts(
+                                    assets[index].assetNftContract,
+                                  );
+                                  let newApprovals = [...addedAssetsApprovals];
+                                  newApprovals[index] = true;
+                                  setAddedAssetsApprovals(newApprovals);
+                                }}
+                              >
+                                Approve
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div
+                          style={{ display: "flex", justifyContent: "center" }}
+                        >
+                          <Button
+                            type="secondary"
+                            size="large"
+                            style={{
+                              width: "auto",
+                              marginTop: "25px",
+                              color: geekblue[3],
+                              borderColor: geekblue[4],
+                              borderRadius: "0.3rem",
+                            }}
+                            onClick={showModal} // disabled={}
+                          >
+                            Select Asset NFT
+                          </Button>
+                        </div>
+                      )}
+
+                      {isModalVisible && (
+                        <AssetModal
+                          setIsModalVisible={setIsModalVisible}
+                          NFTBalances={NFTBalances}
+                          // verifyMetadata={verifyMetadata}
+                          assetCardIndex={index}
+                          assets={addedAssets}
+                          setAssets={setAddedAssets}
+                          selectedNFTs={selectedNFTs}
+                          setSelectedNFTs={setSelectedNFTs}
+                          checkNftApproval={checkNftApproval}
+                          setIsEditing={setIsEditing}
+                        />
+                      )}
+                    </Card>
+                  ))}
+
+                  <Button
+                    type="text"
+                    size="large"
+                    style={{
+                      width: "100%",
+                      marginTop: "25px",
+                      color:
+                        assets.length === 0 ||
+                        isEditing ||
                         addedAssets.length >= 10 ||
                         selectedNFTs.length === NFTBalances?.result.length
-                      }
-                      onClick={() => {
-                        handleAdd();
-                        setIsEditing(true);
-                        console.log(assets);
-                        console.log("approvals", approvals);
-                        console.log("NFT balance array ", NFTBalances?.result);
-                      }}
-                    >
-                      + More Assets
-                    </Button>
-                  </div>
+                          ? ""
+                          : blue.primary,
+                    }}
+                    disabled={
+                      assets.length === 0 ||
+                      isEditing ||
+                      addedAssets.length >= 10 ||
+                      selectedNFTs.length === NFTBalances?.result.length
+                    }
+                    onClick={() => {
+                      handleAddNewAssets();
+                      setIsEditing(true);
+                      console.log(addedAssets);
+                      // console.log("approvals", approvals);
+                      console.log("NFT balance array ", NFTBalances?.result);
+                    }}
+                  >
+                    + More Assets
+                  </Button>
                   <div
                     style={{
                       display: "flex",
@@ -546,11 +836,17 @@ function ViewWillContents() {
                         width: "auto",
                         marginLeft: "15px",
                         color:
-                          assets.length === originalAssetsLength ? "" : "white",
+                          assets.length === originalAssetsLength &&
+                          !isFormComplete
+                            ? ""
+                            : "white",
                         borderRadius: "0.3rem",
                       }}
                       onClick={handleSave}
-                      disabled={assets.length === originalAssetsLength}
+                      disabled={
+                        assets.length === originalAssetsLength && // no deletions
+                        !isFormComplete // no additions
+                      }
                     >
                       Save Assets
                     </Button>
@@ -598,75 +894,143 @@ function ViewWillContents() {
               </div>
             </div>
           )}
-
-          {/*{loading ? (*/}
-          {/*<div*/}
-          {/*  style={{*/}
-          {/*    display: "flex",*/}
-          {/*    justifyContent: "center",*/}
-          {/*    alignItems: "center",*/}
-          {/*    marginTop: "25px",*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Spin size="large" />*/}
-          {/*</div>*/}
-          {/*) : (*/}
-          {/*  <section>*/}
-          {/*    <div style={styles.select}>*/}
-          {/*      <div style={styles.textWrapper}>*/}
-          {/*        <Text strong>Recipient:</Text>*/}
-          {/*      </div>*/}
-          {/*      <p>{beneficiaryAdd ? truncateEthAddress(beneficiaryAdd) : "-"}</p>*/}
-          {/*    </div>*/}
-
-          {/*    <div style={styles.select}>*/}
-          {/*      <div style={styles.textWrapper}>*/}
-          {/*        <Text strong>Asset:</Text>*/}
-          {/*      </div>*/}
-          {/*      <Card*/}
-          {/*        hoverable*/}
-          {/*        // title={`place holder name`}*/}
-          {/*        style={{*/}
-          {/*          width: "200px",*/}
-          {/*          maxHeight: "340px",*/}
-          {/*          border: "2px solid #e7eaf3",*/}
-          {/*          marginRight: "25px",*/}
-          {/*          marginLeft: "25px",*/}
-          {/*          marginBottom: "20px",*/}
-          {/*        }}*/}
-          {/*        cover={*/}
-          {/*          <Image*/}
-          {/*            preview={false}*/}
-          {/*            src={"dsd" || "error"}*/}
-          {/*            fallback="data:image/png;base64,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"*/}
-          {/*            alt=""*/}
-          {/*            style={{*/}
-          {/*              // minWidth: "150px",*/}
-          {/*              maxWidth: "100%",*/}
-          {/*              height: "200px",*/}
-          {/*              objectFit: "cover",*/}
-          {/*            }}*/}
-          {/*          />*/}
-          {/*        }*/}
-          {/*      >*/}
-          {/*        <Space direction="vertical">*/}
-          {/*          /!*<Text strong>place holder name</Text>*!/*/}
-          {/*          <Text>*/}
-          {/*            {assetContractAdd*/}
-          {/*              ? truncateEthAddress(assetContractAdd)*/}
-          {/*              : assetContractAdd}*/}
-          {/*          </Text>*/}
-          {/*          <Text>Token ID: {tokenId}</Text>*/}
-          {/*        </Space>*/}
-          {/*      </Card>*/}
-          {/*    </div>*/}
-          {/*    /!*<Button onClick={fetchWill}>Fetch</Button>*!/*/}
-          {/*  </section>*/}
-          {/*)}*/}
         </div>
       )}
     </div>
   );
 }
+
+const AssetModal = ({
+  setIsModalVisible,
+  NFTBalances,
+  // verifyMetadata,
+  assetCardIndex,
+  assets,
+  setAssets,
+  selectedNFTs,
+  setSelectedNFTs,
+  checkNftApproval,
+  setIsEditing,
+}) => {
+  // copy the actual NFT balance
+  const [NFTs, setNFTs] = useState([]);
+
+  useEffect(
+    () => setNFTs(_.difference([...NFTBalances?.result], selectedNFTs)),
+    [NFTBalances, selectedNFTs],
+  );
+  //
+  // console.log("selected NFTs: ", selectedNFTs);
+  // console.log("nfts: ", [...NFTBalances.result]);
+
+  return (
+    <Modal
+      title="Pick an NFT"
+      visible={true}
+      onOk={() => setIsModalVisible(false)}
+      onCancel={() => setIsModalVisible(false)}
+      centered
+      width="800px"
+      style={{
+        width: "400px",
+        maxWidth: "800px",
+      }}
+    >
+      {!NFTs?.length ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              <span>
+                You don't own any NFTs. Mint
+                <NavLink to="/mint"> Here </NavLink>
+              </span>
+            }
+          />
+        </div>
+      ) : (
+        <div
+          loading={!NFTs}
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            flexBasis: "auto",
+
+            overflow: "auto", // responsible for making the div scrollable
+            height: "500px", // responsible for making the div scrollable
+          }}
+        >
+          {NFTs &&
+            NFTs.map((nft, index) => {
+              //Verify Metadata
+              // nft = verifyMetadata(nft);
+              return (
+                <Card
+                  hoverable
+                  style={{
+                    width: "200px",
+                    maxHeight: "340px",
+                    border: "2px solid #e7eaf3",
+                    marginRight: "25px",
+                    marginLeft: "25px",
+                    marginBottom: "20px",
+                  }}
+                  cover={
+                    <Image
+                      preview={false}
+                      src={nft?.image || "error"}
+                      fallback="data:image/png;base64,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"
+                      alt=""
+                      style={{
+                        // minWidth: "150px",
+                        maxWidth: "100%",
+                        height: "200px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  }
+                  key={index}
+                  onClick={async () => {
+                    // update parent asset state
+                    let newAssets = [...assets];
+                    newAssets[assetCardIndex].assetNftContract =
+                      nft.token_address;
+                    newAssets[assetCardIndex].tokenId = nft.token_id;
+                    await checkNftApproval(nft.token_address);
+                    setAssets(newAssets);
+
+                    // update parent selectedNfts state
+                    let newSelectedNFTs = [...selectedNFTs];
+                    newSelectedNFTs.push(NFTs[index]);
+                    setSelectedNFTs(newSelectedNFTs);
+                    // update modal nftData state
+                    let newNFTs = [...NFTs];
+                    newNFTs.splice(index, 1);
+                    setNFTs(newNFTs);
+                    setIsEditing(false);
+                    // close modal
+                    setIsModalVisible(false);
+                  }}
+                >
+                  <Space direction="vertical">
+                    <Text strong>{nft.name}</Text>
+                    <Text>{truncateEthAddress(nft.token_address)}</Text>
+                    <Text>Token ID: {nft.token_id}</Text>
+                  </Space>
+                </Card>
+              );
+            })}
+        </div>
+      )}
+    </Modal>
+  );
+};
 
 export default ViewWillContents;

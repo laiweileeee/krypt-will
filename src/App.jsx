@@ -104,7 +104,7 @@ const App = ({ isServerInfo }) => {
             <Route path="/create-will">
               <CreateWill />
             </Route>
-            <Route path="/nftBalance">
+            <Route path="/assets">
               <NFTBalance />
             </Route>
 
