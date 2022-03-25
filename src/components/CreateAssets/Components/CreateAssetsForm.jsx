@@ -93,7 +93,6 @@ function CreateAssetsForm() {
   const [isEditing, setIsEditing] = useState(true);
   const [isFormComplete, setIsFormComplete] = useState(false);
 
-  const [assetNum, setAssetNum] = useState(1);
   const [assets, setAssets] = useState([
     {
       assetId: uuidv4(),
@@ -191,7 +190,6 @@ function CreateAssetsForm() {
       beneficiary: "",
     };
 
-    setAssetNum(assetNum + 1);
     assets.push(newAsset);
   };
 
@@ -217,7 +215,6 @@ function CreateAssetsForm() {
     setAssets(newAssets);
 
     setIsEditing(false);
-    setAssetNum(assetNum - 1);
   };
 
   const checkFormComplete = () => {
@@ -315,8 +312,9 @@ function CreateAssetsForm() {
 
       setLoading(LoadingState.COMPLETE);
     } catch (error) {
-      console.log("Error creating will: ", error);
-      setLoading(LoadingState.COMPLETE);
+      const errorMsg = new Error(error).toString();
+      message.error(errorMsg);
+      // setLoading(LoadingState.COMPLETE);
     }
   };
 
@@ -395,27 +393,6 @@ function CreateAssetsForm() {
               )}
             </Space>
           </div>
-
-          {isZeroAddress && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: "25px",
-              }}
-            >
-              <Empty
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description={
-                  <span>
-                    Will not created for this account <br /> Use Gov address to
-                    create one
-                  </span>
-                }
-              />
-            </div>
-          )}
 
           {!isZeroAddress && (
             <div>
@@ -573,14 +550,14 @@ function CreateAssetsForm() {
                   marginTop: "25px",
                   color:
                     isEditing ||
-                    assetNum >= 10 ||
+                    assets.length >= 10 ||
                     selectedNFTs.length === NFTBalances?.result.length
                       ? ""
                       : blue.primary,
                 }}
                 disabled={
                   isEditing ||
-                  assetNum >= 10 ||
+                  assets.length >= 10 ||
                   selectedNFTs.length === NFTBalances?.result.length
                 }
                 onClick={() => {
@@ -608,6 +585,28 @@ function CreateAssetsForm() {
               >
                 Create Assets <SendOutlined />
               </Button>
+            </div>
+          )}
+
+          {/* Show will not found */}
+          {isZeroAddress && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "25px",
+              }}
+            >
+              <Empty
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={
+                  <span>
+                    Will not created for this account <br /> Use Gov address to
+                    create one
+                  </span>
+                }
+              />
             </div>
           )}
         </div>

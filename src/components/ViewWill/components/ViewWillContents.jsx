@@ -73,21 +73,18 @@ const LoadingState = {
   SUBMIT_COMPLETE: "complete",
 };
 
-// TODO: Remove hardcode and find a way to fetch will address associated with this user's wallet address
 // TODO: Find will contract address from user
+const willFactoryContract = "0x0D17895c11EF2bf60E7E9c70931E63F295d80BCD";
 
-function WillContent() {
+function ViewWillContents() {
   const { Moralis, isAuthenticated, account } = useMoralis();
-
-  const [beneficiaryAdd, setBeneficiaryAdd] = useState();
-  const [assetContractAdd, setAssetContractAdd] = useState();
-  const [tokenId, setTokenId] = useState(0);
 
   const { data: NFTBalances } = useNFTBalances();
   const [willContractAddress, setWillContractAddress] = useState();
   const [isExecuted, setIsExecuted] = useState();
   const [selectedNFTs, setSelectedNFTs] = useState([]);
   const [deletedAssets, setDeletedAssets] = useState([]);
+  const [addedAssets, setAddedAssets] = useState([]);
   const [connectedAddress, setConnectedAddress] = useState();
   const [loading, setLoading] = useState(LoadingState.INITIAL);
   const [isApprovalPending, setIsApprovalPending] = useState(false);
@@ -124,7 +121,7 @@ function WillContent() {
 
   const fetchWillContractAddress = async () => {
     const fetchWillContractTxMsg = await Moralis.executeFunction({
-      contractAddress: "0x0D17895c11EF2bf60E7E9c70931E63F295d80BCD",
+      contractAddress: willFactoryContract,
       functionName: "willOwnerToWillAddress",
       abi: willFactoryContractABI,
       params: {
@@ -176,6 +173,18 @@ function WillContent() {
     setAssetNum(fetchedAssets.length);
     setOriginalAssetsLength(fetchedAssets.length);
     // setAssets(fetchedAssets);
+  };
+
+  const handleAdd = () => {
+    const newAsset = {
+      assetId: uuidv4(),
+      assetNftContract: "",
+      tokenId: undefined,
+      beneficiary: "",
+    };
+
+    setAssetNum(assetNum + 1);
+    addedAssets.push(newAsset);
   };
 
   const handleDelete = (index) => {
@@ -249,6 +258,8 @@ function WillContent() {
       setLoading(LoadingState.SUBMIT_COMPLETE);
     } catch (error) {
       console.log("Error editing will: ", error);
+      const errorMsg = new Error(error).toString();
+      message.error(errorMsg);
       setLoading(LoadingState.FETCH_COMPLETE);
     }
   };
@@ -287,6 +298,8 @@ function WillContent() {
       setLoading(LoadingState.SUBMIT_COMPLETE);
     } catch (error) {
       console.log("Error destroying will: ", error);
+      const errorMsg = new Error(error).toString();
+      message.error(errorMsg);
       setLoading(LoadingState.FETCH_COMPLETE);
     }
   };
@@ -342,7 +355,7 @@ function WillContent() {
                       <div
                         style={{ textAlign: "center", fontWeight: "normal" }}
                       >
-                        View will{" "}
+                        View assets{" "}
                         <NavLink
                           to={"/view"}
                           onClick={() => window.location.reload(false)}
@@ -380,7 +393,7 @@ function WillContent() {
                 //  show Assets
                 <div>
                   <div style={styles.header}>
-                    <h3>View Will</h3>
+                    <h3>View Assets</h3>
                     <Space direction="vertical">
                       {willContractAddress && (
                         <Space>
@@ -485,14 +498,14 @@ function WillContent() {
                         marginTop: "25px",
                         color:
                           isEditing ||
-                          assetNum >= 10 ||
+                          addedAssets.length >= 10 ||
                           selectedNFTs.length === NFTBalances?.result.length
                             ? ""
                             : blue.primary,
                       }}
                       disabled={
-                        isEditing ||
-                        assetNum >= 10 ||
+                        // isEditing ||
+                        addedAssets.length >= 10 ||
                         selectedNFTs.length === NFTBalances?.result.length
                       }
                       onClick={() => {
@@ -656,4 +669,4 @@ function WillContent() {
   );
 }
 
-export default WillContent;
+export default ViewWillContents;

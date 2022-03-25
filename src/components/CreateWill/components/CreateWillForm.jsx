@@ -3,7 +3,7 @@ import {
   FileSearchOutlined,
   SendOutlined,
 } from "@ant-design/icons";
-import { Button, Input, message, notification, Spin } from "antd";
+import { Alert, Button, Input, message, notification, Spin } from "antd";
 import Text from "antd/lib/typography/Text";
 import React, { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
@@ -45,7 +45,7 @@ const styles = {
   },
 };
 
-const willFactoryAddress = "0xF04e1D951Ad1652dF7c7C930E865184E9bcD7327";
+const willFactoryAddress = "0x0D17895c11EF2bf60E7E9c70931E63F295d80BCD";
 
 function CreateWillForm() {
   const { Moralis, account, isAuthenticated } = useMoralis();
@@ -61,39 +61,44 @@ function CreateWillForm() {
   }, [account, isAuthenticated]);
 
   const createWillGov = async () => {
-    // execute create Will function using moralisAPI
-    const createWillGovTx = await Moralis.executeFunction({
-      contractAddress: willFactoryAddress,
-      functionName: "createWill",
-      abi: willFactoryContractABI,
-      params: {
-        willOwner: willOwnerAdd,
-        govAdd: connectedAddress,
-      },
-    });
+    try {
+      // execute create Will function using moralisAPI
+      const createWillGovTx = await Moralis.executeFunction({
+        contractAddress: willFactoryAddress,
+        functionName: "createWill",
+        abi: willFactoryContractABI,
+        params: {
+          willOwner: willOwnerAdd,
+          govAdd: connectedAddress,
+        },
+      });
 
-    console.log(createWillGovTx.hash);
-    setTxHash(createWillGovTx.hash);
-    setLoading(true);
+      console.log(createWillGovTx.hash);
+      setTxHash(createWillGovTx.hash);
+      setLoading(true);
 
-    await createWillGovTx.wait();
+      await createWillGovTx.wait();
 
-    const createWillGovTxMsg = await Moralis.executeFunction({
-      contractAddress: willFactoryAddress,
-      functionName: "willOwnerToWillAddress",
-      abi: willFactoryContractABI,
-      params: {
-        "": willOwnerAdd,
-      },
-    });
+      const createWillGovTxMsg = await Moralis.executeFunction({
+        contractAddress: willFactoryAddress,
+        functionName: "willOwnerToWillAddress",
+        abi: willFactoryContractABI,
+        params: {
+          "": willOwnerAdd,
+        },
+      });
 
-    console.log(createWillGovTxMsg);
+      console.log(createWillGovTxMsg);
 
-    message.success(
-      `Successfully created will for will owner: ${willOwnerAdd}!!`,
-    );
-    setLoading(false);
-    setWillOwnerAdd(undefined);
+      message.success(
+        `Successfully created will for will owner: ${willOwnerAdd}!!`,
+      );
+      setLoading(false);
+      setWillOwnerAdd(undefined);
+    } catch (error) {
+      const errorMsg = new Error(error).toString();
+      message.error(errorMsg);
+    }
   };
 
   return (
@@ -129,17 +134,19 @@ function CreateWillForm() {
       ) : (
         //  show create will form
         <div>
+          <Alert
+            description="Only available for Gov address"
+            type="warning"
+            closable
+            style={{ marginBottom: "1.5rem" }}
+          />
           <div style={styles.header}>
             <h3>Create will </h3>
-            <p style={{ color: "red", fontWeight: "normal" }}>
-              {" "}
-              ---- Only available for gov address! ----{" "}
-            </p>{" "}
           </div>
 
           <div style={styles.select}>
             <div style={styles.textWrapper}>
-              <Text strong>Address:</Text>
+              <Text strong>Will Owner Address:</Text>
             </div>
             <Input
               size="large"

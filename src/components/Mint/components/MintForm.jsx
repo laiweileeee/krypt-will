@@ -149,7 +149,9 @@ function MintForm() {
       setFileUrl(undefined);
       setLoading(false);
     } catch (error) {
-      console.log("Error uploading file: ", error);
+      console.log("Error minting NFT: ", error);
+      const errorMsg = new Error(error).toString();
+      message.error(errorMsg);
       setLoading(false);
     }
   };
@@ -173,6 +175,8 @@ function MintForm() {
       setFileUrl(url);
     } catch (error) {
       console.log("Error uploading file: ", error);
+      const errorMsg = new Error(error).toString();
+      message.error(errorMsg);
     }
   };
 

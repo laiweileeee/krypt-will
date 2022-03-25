@@ -48,45 +48,50 @@ function ExecuteWillForm() {
   const [txHash, setTxHash] = useState();
 
   const executeWill = async () => {
-    // execute create Will function using moralisAPI
-    const executeWillTx = await Moralis.executeFunction({
-      contractAddress: willContractAdd,
-      functionName: "executeWill",
-      abi: willContractABI,
-    });
+    try {
+      // execute create Will function using moralisAPI
+      const executeWillTx = await Moralis.executeFunction({
+        contractAddress: willContractAdd,
+        functionName: "executeWill",
+        abi: willContractABI,
+      });
 
-    console.log(executeWillTx.hash);
-    setTxHash(executeWillTx.hash);
-    setLoading(true);
+      console.log(executeWillTx.hash);
+      setTxHash(executeWillTx.hash);
+      setLoading(true);
 
-    // Wait until the transaction is confirmed
-    await executeWillTx.wait();
+      // Wait until the transaction is confirmed
+      await executeWillTx.wait();
 
-    // Check if will is still active
-    const executeWillTxMsg1 = await Moralis.executeFunction({
-      contractAddress: willContractAdd,
-      functionName: "isActive",
-      abi: willContractABI,
-    });
+      // Check if will is still active
+      const executeWillTxMsg1 = await Moralis.executeFunction({
+        contractAddress: willContractAdd,
+        functionName: "isActive",
+        abi: willContractABI,
+      });
 
-    // Check that isActive value is now false
-    console.log(executeWillTxMsg1);
-    if (executeWillTxMsg1) {
-      message.error("Failed to change isActive to false state in contract");
+      // Check that isActive value is now false
+      console.log(executeWillTxMsg1);
+      if (executeWillTxMsg1) {
+        message.error("Failed to change isActive to false state in contract");
+      }
+
+      // Read new value
+      const executeWillTxMsg2 = await Moralis.executeFunction({
+        contractAddress: willContractAdd,
+        functionName: "willOwner",
+        abi: willContractABI,
+      });
+
+      message.success(
+        `Successfully executed will at address ${executeWillTxMsg2}!!`,
+      );
+      setWillContractAdd(undefined);
+      setLoading(false);
+    } catch (error) {
+      const errorMsg = new Error(error).toString();
+      message.error(errorMsg);
     }
-
-    // Read new value
-    const executeWillTxMsg2 = await Moralis.executeFunction({
-      contractAddress: willContractAdd,
-      functionName: "willOwner",
-      abi: willContractABI,
-    });
-
-    message.success(
-      `Successfully executed will at address ${executeWillTxMsg2}!!`,
-    );
-    setWillContractAdd(undefined);
-    setLoading(false);
   };
 
   return (

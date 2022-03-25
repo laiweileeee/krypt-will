@@ -9,7 +9,7 @@ import {
 import Account from "components/Account/Account";
 import Chains from "components/Chains";
 import NFTBalance from "components/NFTBalance";
-import { Layout, Tabs, Switch as AntdSwitch } from "antd";
+import { Layout, Tabs, Switch as AntdSwitch, Space } from "antd";
 import "antd/dist/antd.css";
 import NativeBalance from "components/NativeBalance";
 import "./style.css";
@@ -68,13 +68,16 @@ const App = ({ isServerInfo }) => {
     <Layout style={{ height: "100vh", overflow: "auto" }}>
       <Router>
         <Header style={styles.header}>
-          <AntdSwitch
-            style={{ marginLeft: "4rem" }}
-            defaultChecked={false}
-            onClick={() => {
-              setIsGovAccount(!isGovAccount);
-            }}
-          />
+          <Space direction="horizontal">
+            <AntdSwitch
+              style={{ marginLeft: "4rem" }}
+              defaultChecked={false}
+              onClick={() => {
+                setIsGovAccount(!isGovAccount);
+              }}
+            />
+            <p style={{ display: "flex", width: 200 }}>Toggle Gov Mode</p>
+          </Space>
           <MenuItems isGovAccount={isGovAccount} />
           <div style={styles.headerRight}>
             <Chains />
@@ -98,7 +101,7 @@ const App = ({ isServerInfo }) => {
             <Route path="/execute">
               <ExecuteWill />
             </Route>
-            <Route path="/create">
+            <Route path="/create-will">
               <CreateWill />
             </Route>
             <Route path="/nftBalance">
