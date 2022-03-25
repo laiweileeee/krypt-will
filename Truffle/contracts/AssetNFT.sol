@@ -20,43 +20,43 @@ contract AssetNFT is ERC721Enumerable, Ownable {
     uint256 private supplyLimit;
 
     constructor(string memory _name, string memory _symbol)
-    ERC721(_name, _symbol)
+        ERC721(_name, _symbol)
     {}
 
     /* Base URI removed to reduce complexity, we just refer to token URI */
 
     function _setTokenURI(uint256 tokenId, string memory _tokenURI) internal virtual {
-    require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
-    tokenURIs[tokenId] = _tokenURI;
+        require(_exists(tokenId), "ERC721Metadata: URI set of nonexistent token");
+        tokenURIs[tokenId] = _tokenURI;
     }
 
     function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
-    require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
+        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token");
 
-    string memory _tokenURI = tokenURIs[tokenId];
-    string memory base = _baseURI();
+        string memory _tokenURI = tokenURIs[tokenId];
+        string memory base = _baseURI();
 
-    // If there is no base URI, return the token URI.
-    if (bytes(base).length == 0) {
-    return _tokenURI;
-    }
-    // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
-    if (bytes(_tokenURI).length > 0) {
-    return string(abi.encodePacked(base, _tokenURI));
-    }
-    // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
-    return string(abi.encodePacked(base, tokenId.toString()));
+        // If there is no base URI, return the token URI.
+        if (bytes(base).length == 0) {
+        return _tokenURI;
+        }
+        // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
+        if (bytes(_tokenURI).length > 0) {
+        return string(abi.encodePacked(base, _tokenURI));
+        }
+        // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
+        return string(abi.encodePacked(base, tokenId.toString()));
     }
 
     function getTokenIds(address owner) public view returns (uint256[] memory) {
-    uint256 numTokens = balanceOf(owner);
-    uint256[] memory tokenIds = new uint[](numTokens);
+        uint256 numTokens = balanceOf(owner);
+        uint256[] memory tokenIds = new uint[](numTokens);
 
-    for(uint i=0; i<numTokens; i++) {
-    uint256 tokenId = tokenOfOwnerByIndex(owner, i);
-    tokenIds[i] = tokenId;
-    }
-    return tokenIds;
+        for(uint i=0; i<numTokens; i++) {
+        uint256 tokenId = tokenOfOwnerByIndex(owner, i);
+        tokenIds[i] = tokenId;
+        }
+        return tokenIds;
     }
 
 
@@ -65,8 +65,8 @@ contract AssetNFT is ERC721Enumerable, Ownable {
     uint256 _tokenId,
     string memory tokenURI_
     ) external onlyOwner() returns (uint) {
-    _safeMint(_to, _tokenId);
-    _setTokenURI(_tokenId, tokenURI_);
-    return _tokenId;
+        _safeMint(_to, _tokenId);
+        _setTokenURI(_tokenId, tokenURI_);
+        return _tokenId;
     }
 }
