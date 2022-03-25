@@ -7,8 +7,8 @@ import { Button, Input, message, notification, Spin } from "antd";
 import Text from "antd/lib/typography/Text";
 import React, { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
-import { willFactoryABI } from "../../../contracts/willFactoryABI";
 import { truncateEthAddress } from "../../../utils/TruffleEthAddress";
+import { willFactoryContractABI } from "../../../contracts/willFactoryContractABI";
 
 const styles = {
   card: {
@@ -47,7 +47,7 @@ const styles = {
 
 const willFactoryAddress = "0xF04e1D951Ad1652dF7c7C930E865184E9bcD7327";
 
-function CreateWillGovForm() {
+function CreateWillForm() {
   const { Moralis, account, isAuthenticated } = useMoralis();
   const [loading, setLoading] = useState(false);
   const [connectedAddress, setConnectedAddress] = useState();
@@ -65,7 +65,7 @@ function CreateWillGovForm() {
     const createWillGovTx = await Moralis.executeFunction({
       contractAddress: willFactoryAddress,
       functionName: "createWill",
-      abi: willFactoryABI,
+      abi: willFactoryContractABI,
       params: {
         willOwner: willOwnerAdd,
         govAdd: connectedAddress,
@@ -81,7 +81,7 @@ function CreateWillGovForm() {
     const createWillGovTxMsg = await Moralis.executeFunction({
       contractAddress: willFactoryAddress,
       functionName: "willOwnerToWillAddress",
-      abi: willFactoryABI,
+      abi: willFactoryContractABI,
       params: {
         "": willOwnerAdd,
       },
@@ -168,4 +168,4 @@ function CreateWillGovForm() {
   );
 }
 
-export default CreateWillGovForm;
+export default CreateWillForm;

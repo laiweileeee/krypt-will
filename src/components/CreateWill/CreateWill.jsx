@@ -2,11 +2,12 @@ import NativeBalance from "../NativeBalance";
 import Address from "../Address/Address";
 import Blockie from "../Blockie";
 import { Card } from "antd";
-import CreateWillForm from "./Components/CreateWillForm";
+import CreateWillForm from "./components/CreateWillForm";
 
 const styles = {
   title: {
     fontSize: "30px",
+
     fontWeight: "600",
   },
   header: {

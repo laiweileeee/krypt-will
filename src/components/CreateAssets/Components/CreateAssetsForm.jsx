@@ -82,7 +82,7 @@ const LoadingState = {
 // TODO: Remove hardcode and find a way to fetch will address associated with this user's wallet address
 // const willContractAddress = "0x00Be4D5F09ede0a7e6Eb6354f3413c106Babf450";
 
-function CreateWillForm() {
+function CreateAssetsForm() {
   const { Moralis, account, isAuthenticated } = useMoralis();
   const { data: NFTBalances } = useNFTBalances();
   const [willContractAddress, setWillContractAddress] = useState();
@@ -746,4 +746,4 @@ const AssetModal = ({
   );
 };
 
-export default CreateWillForm;
+export default CreateAssetsForm;

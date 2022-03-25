@@ -24,11 +24,11 @@ import Contract from "components/Contract/Contract";
 import Text from "antd/lib/typography/Text";
 import Ramper from "components/Ramper";
 import MenuItems from "./components/MenuItems";
-import CreateWill from "./components/CreateWill";
+import CreateAssets from "./components/CreateAssets";
 import ViewWill from "./components/ViewWill";
 import Mint from "./components/Mint";
 import ExecuteWill from "./components/ExecuteWill";
-import CreateWillGov from "components/CreateWillGov";
+import CreateWill from "components/CreateWill";
 const { Header, Footer } = Layout;
 
 const styles = {
@@ -99,7 +99,7 @@ const App = ({ isServerInfo }) => {
               <Wallet />
             </Route>
             <Route path="/create">
-              <CreateWill />
+              <CreateAssets />
             </Route>
             <Route path="/view">
               <ViewWill />
@@ -110,42 +110,11 @@ const App = ({ isServerInfo }) => {
             <Route path="/execute">
               <ExecuteWill />
             </Route>
-            <Route path="/createGov">
-              <CreateWillGov />
+            <Route path="/create">
+              <CreateWill />
             </Route>
             <Route path="/nftBalance">
               <NFTBalance />
-            </Route>
-
-            {/* Unused paths */}
-            <Route exact path="/quickstart">
-              <QuickStart isServerInfo={isServerInfo} />
-            </Route>
-            <Route path="/1inch">
-              <Tabs defaultActiveKey="1" style={{ alignItems: "center" }}>
-                <Tabs.TabPane tab={<span>Ethereum</span>} key="1">
-                  <DEX chain="eth" />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab={<span>Binance Smart Chain</span>} key="2">
-                  <DEX chain="bsc" />
-                </Tabs.TabPane>
-                <Tabs.TabPane tab={<span>Polygon</span>} key="3">
-                  <DEX chain="polygon" />
-                </Tabs.TabPane>
-              </Tabs>
-            </Route>
-            <Route path="/erc20balance">
-              <ERC20Balance />
-            </Route>
-            <Route path="/onramp">
-              <Ramper />
-            </Route>
-            <Route path="/erc20transfers">
-              <ERC20Transfers />
-            </Route>
-
-            <Route path="/contract">
-              <Contract />
             </Route>
 
             {/* Fallback paths */}

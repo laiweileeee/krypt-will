@@ -25,7 +25,7 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 
 ## Front-End Pages
 
-- [x] Create Will Page - For will owners to create will 
+- [x] Create Will Page - For will owners to create will
 - [x] View Will Page - For will owners to view their will (Can delete, Cannot add more assets yet)
 - [x] Mint Page - For Gov to mint NFTs to will owners
 - [x] Execute Will Page - For Gov to simulate will owners' death and execute will

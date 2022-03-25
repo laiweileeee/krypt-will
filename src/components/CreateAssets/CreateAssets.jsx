@@ -2,12 +2,11 @@ import NativeBalance from "../NativeBalance";
 import Address from "../Address/Address";
 import Blockie from "../Blockie";
 import { Card } from "antd";
-import CreateWillGovForm from "./components/CreateWillGovForm";
+import CreateAssetsForm from "./Components/CreateAssetsForm";
 
 const styles = {
   title: {
     fontSize: "30px",
-
     fontWeight: "600",
   },
   header: {
@@ -26,7 +25,7 @@ const styles = {
   },
 };
 
-function CreateWillGov() {
+function CreateAssets() {
   return (
     <Card
       style={styles.card}
@@ -38,9 +37,9 @@ function CreateWillGov() {
         </div>
       }
     >
-      <CreateWillGovForm />
+      <CreateAssetsForm />
     </Card>
   );
 }
 
-export default CreateWillGov;
+export default CreateAssets;
