@@ -16,7 +16,7 @@ import "./style.css";
 import Text from "antd/lib/typography/Text";
 import MenuItems from "./components/MenuItems";
 import CreateAssets from "./components/CreateAssets";
-import ViewWill from "./components/ViewWill";
+import ViewAssets from "./components/ViewAssets";
 import Mint from "./components/Mint";
 import ExecuteWill from "./components/ExecuteWill";
 import CreateWill from "components/CreateWill";
@@ -94,7 +94,7 @@ const App = ({ isServerInfo }) => {
               <CreateAssets />
             </Route>
             <Route path="/view">
-              <ViewWill />
+              <ViewAssets />
             </Route>
             <Route path="/mint">
               <Mint />

@@ -75,7 +75,7 @@ const LoadingState = {
 // TODO: Find will contract address from user
 const willFactoryContract = "0x0D17895c11EF2bf60E7E9c70931E63F295d80BCD";
 
-function ViewWillContents() {
+function ViewAssetsForm() {
   const { Moralis, isAuthenticated, account } = useMoralis();
 
   const { data: NFTBalances } = useNFTBalances();
@@ -1042,4 +1042,4 @@ const AssetModal = ({
   );
 };
 
-export default ViewWillContents;
+export default ViewAssetsForm;

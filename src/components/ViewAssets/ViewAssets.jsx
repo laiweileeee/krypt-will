@@ -2,7 +2,7 @@ import NativeBalance from "../NativeBalance";
 import Address from "../Address/Address";
 import Blockie from "../Blockie";
 import { Card } from "antd";
-import ViewWillContents from "./components/ViewWillContents";
+import ViewAssetsForm from "./components/ViewAssetsForm";
 
 const styles = {
   title: {
@@ -25,7 +25,7 @@ const styles = {
   },
 };
 
-function ViewWill() {
+function ViewAssets() {
   return (
     <Card
       style={styles.card}
@@ -36,9 +36,9 @@ function ViewWill() {
         </div>
       }
     >
-      <ViewWillContents />
+      <ViewAssetsForm />
     </Card>
   );
 }
 
-export default ViewWill;
+export default ViewAssets;
