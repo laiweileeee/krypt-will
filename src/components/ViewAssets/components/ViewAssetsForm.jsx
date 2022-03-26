@@ -767,7 +767,7 @@ function ViewAssetsForm() {
                       {isModalVisible && (
                         <AssetModal
                           setIsModalVisible={setIsModalVisible}
-                          // NFTBalances={NFTBalances}
+                          NFTBalances={NFTBalances}
                           assetCardIndex={index}
                           assets={addedAssets}
                           setAssets={setAddedAssets}
@@ -903,7 +903,7 @@ function ViewAssetsForm() {
 
 const AssetModal = ({
   setIsModalVisible,
-  // verifyMetadata,
+  NFTBalances,
   assetCardIndex,
   assets,
   setAssets,
@@ -913,19 +913,9 @@ const AssetModal = ({
   setIsEditing,
 }) => {
   // copy the actual NFT balance
-  const [loading, setLoading] = useState(true);
-  const { data: NFTBalances } = useNFTBalances();
   const [NFTs, setNFTs] = useState(
-    NFTBalances?.result && _.difference([...NFTBalances?.result], selectedNFTs),
+    _.difference([...NFTBalances?.result], selectedNFTs),
   );
-
-  useEffect(() => {
-    if (NFTBalances?.result) {
-      setLoading(true);
-      setNFTs(_.difference([...NFTBalances?.result], selectedNFTs));
-      setLoading(false);
-    }
-  }, [NFTBalances, selectedNFTs]);
 
   return (
     <Modal
@@ -940,11 +930,7 @@ const AssetModal = ({
         maxWidth: "800px",
       }}
     >
-      {loading ? ( // show fetch loader
-        <div style={{ display: "flex", justifyContent: "center" }}>
-          <Spin size="large" />
-        </div>
-      ) : !NFTs?.length ? (
+      {!NFTs?.length ? (
         // show assets
         <div
           style={{
