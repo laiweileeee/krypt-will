@@ -16,9 +16,6 @@ contract AssetNFT is ERC721Enumerable, Ownable {
     // Optional mapping for token URIs
     mapping (uint256 => string) private tokenURIs;
 
-    // not sure if we need this
-    uint256 private supplyLimit;
-
     constructor(string memory _name, string memory _symbol)
         ERC721(_name, _symbol)
     {}
