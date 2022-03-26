@@ -20,8 +20,8 @@ contract Will {
     }
 
     event AssetCreated(address willOwner);
+    event AssetAllocatedPreviously(address willOwner);
     event WillCreated(address willOwner);
-    event WillEdited(address willOwner);
     event WillDestroyed(address willOwner);
     event WillExecuted(address govAdd);
     // Note: constructor not needed for factory cloning
@@ -46,10 +46,8 @@ contract Will {
     }
 
     function createAsset(address _to, uint256 _tokenId, string memory tokenURI_) public onlyWillOwner {
-        // require(assets.length == 0, "Will has already been created.");
-        // string tokenId;
         assetNFTContract.mint(_to, _tokenId, tokenURI_);
-        assetNFTContract.transferFrom(_to, address(this), _tokenId);
+        assetNFTContract.approve(address(this), _tokenId);
         emit AssetCreated(_willOwner);
     }
 
@@ -66,7 +64,7 @@ contract Will {
             } else if (!dataStorageContract.getTokenIdStatus(asset.tokenId)) {
                 dataStorageContract.toggleTokenIdStatus(asset.tokenId);
             } else {
-                // raise alert
+                emit AssetAllocatedPreviously(government);
             }
         }
     }
@@ -78,16 +76,12 @@ contract Will {
             address beneficiary = dataStorageContract.getTokenIdData(_tokenIdList[i]).beneficiary;
             assetNFTContract.safeTransferFrom(address(this), beneficiary, _tokenIdList[i]);
         }
+
         emit WillExecuted(government);
     }
 
 
-    function destroyWill() public onlyWillOwner {
-        // return all assets from this contract back to the owner
-        for(uint i=0; i < _tokenIdList.length; i++) {
-            assetNFTContract.safeTransferFrom(address(this), _willOwner, _tokenIdList[i]);
-        }
-        
+    function destroyWill() public onlyWillOwner {        
         // detroy will and send remaining eth to owner
         selfdestruct(payable(_willOwner));
 
