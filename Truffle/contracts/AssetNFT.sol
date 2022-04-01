@@ -61,7 +61,7 @@ contract AssetNFT is ERC721Enumerable, Ownable {
     address _to,
     uint256 _tokenId,
     string memory tokenURI_
-    ) external onlyOwner() returns (uint) {
+    ) external onlyOwner returns (uint256) {
         _safeMint(_to, _tokenId);
         _setTokenURI(_tokenId, tokenURI_);
         return _tokenId;

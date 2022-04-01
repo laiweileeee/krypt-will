@@ -9,13 +9,16 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract WillFactory is Ownable, CloneFactory {
     Will[] public wills;
     address masterWillContract;
+    address dataStorageContract;
     address government;
     mapping(address => address) public willOwnerToWillAddress;
 
     event WillCreated(Will newWill);
 
-    constructor(address _masterWillAddress){
+    constructor(address _masterWillAddress, address govAddress, address dataStorageContractAddess){
         masterWillContract = _masterWillAddress;
+        dataStorageContract = dataStorageContractAddess;
+        government = govAddress;
     }
 
     // allows owner to change master will contract to clone from
@@ -25,7 +28,7 @@ contract WillFactory is Ownable, CloneFactory {
 
     function createWill(address willOwner) onlyOwner external {
         Will will = Will(createClone(masterWillContract));
-        will.init(willOwner, government);
+        will.init(willOwner, government, dataStorageContract);
         wills.push(will);
 
         // store will owner => will address mapping

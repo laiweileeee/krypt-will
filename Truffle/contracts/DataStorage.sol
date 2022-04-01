@@ -3,15 +3,15 @@ pragma solidity ^0.8.0;
 
 contract DataStorage {
     struct AssetStatus {
+        address assetNftContractAddress;
         bool includedInWill;
-        string tokenURI;
         address beneficiary;
     }
     mapping (uint256 => AssetStatus) private _tokenIdStatus;
 
-    function setTokenIdData(uint256 tokenId, string memory tokenURI, address beneficiary) public {
+    function setTokenIdData(address assetNftContractAddress, uint256 tokenId, address beneficiary) public {
+        _tokenIdStatus[tokenId].assetNftContractAddress = assetNftContractAddress;
         _tokenIdStatus[tokenId].includedInWill = true;
-        _tokenIdStatus[tokenId].tokenURI = tokenURI;
         _tokenIdStatus[tokenId].beneficiary = beneficiary;
     }
 

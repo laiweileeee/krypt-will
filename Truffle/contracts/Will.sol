@@ -12,15 +12,15 @@ contract Will {
     DataStorage dataStorageContract;
     address public government;
     address private _willOwner;
+    mapping(uint256 => bool) private _tokenIdStatusList;
     uint256[] private _tokenIdList;
     struct AssetData {
+        address assetNftContractAddress;
         uint256 tokenId;
-        string tokenURI;
         address beneficiary;
     }
 
     event AssetCreated(address willOwner);
-    event AssetAllocatedPreviously(address willOwner);
     event WillCreated(address willOwner);
     event WillDestroyed(address willOwner);
     event WillExecuted(address govAdd);
@@ -30,9 +30,10 @@ contract Will {
     /* TODO: think of how to prevent random user from calling this to change willOwner and govAdd state vars
      * If not, we can just use the old and expensive cloning pattern
      */
-    function init (address willOwnerAddress, address govAddress) external {
+    function init (address willOwnerAddress, address govAddress, address dataStorageContractAddess) external {
         _willOwner = willOwnerAddress;
         government = govAddress;
+        dataStorageContract = DataStorage(dataStorageContractAddess);
     }
 
     modifier onlyWillOwner {
@@ -45,26 +46,20 @@ contract Will {
         _;
     }
 
-    function createAsset(address _to, uint256 _tokenId, string memory tokenURI_) private {
-        assetNFTContract.mint(_to, _tokenId, tokenURI_);
-        assetNFTContract.approve(address(this), _tokenId);
-        emit AssetCreated(_willOwner);
-    }
-
-    function setAssetAllocation(AssetData[] memory assetDataList) public onlyWillOwner {
+    function setAssetAllocation(AssetData[] memory assetDataList) public payable onlyWillOwner {
 
         for(uint i = 0; i < assetDataList.length; i++) {
             // transfer ownership of assets to this contract, approval of the ERC721 token must be done first
             AssetData memory asset = assetDataList[i];
-            
-            if (assetNFTContract.ownerOf(asset.tokenId)==address(0)) { // Check if tokenId exist 
+            assetNFTContract = AssetNFT(asset.assetNftContractAddress);
+            if (!_tokenIdStatusList[asset.tokenId]) {
+                _tokenIdStatusList[asset.tokenId] = true;
                 _tokenIdList.push(asset.tokenId);
-                createAsset(_willOwner, asset.tokenId, asset.tokenURI);
-                dataStorageContract.setTokenIdData(asset.tokenId, asset.tokenURI, asset.beneficiary);     
+                dataStorageContract.setTokenIdData(asset.assetNftContractAddress, asset.tokenId, asset.beneficiary);
             } else if (!dataStorageContract.getTokenIdStatus(asset.tokenId)) {
                 dataStorageContract.toggleTokenIdStatus(asset.tokenId);
             } else {
-                emit AssetAllocatedPreviously(government);
+                revert(); // Revert contract since assets are already used in previousl will
             }
         }
     }
@@ -74,7 +69,8 @@ contract Will {
         // send assets to beneficiaries
         for(uint i=0; i < _tokenIdList.length; i++) {
             address beneficiary = dataStorageContract.getTokenIdData(_tokenIdList[i]).beneficiary;
-            assetNFTContract.safeTransferFrom(_willOwner, beneficiary, _tokenIdList[i]);
+            address dataStorageContractAddress = dataStorageContract.getTokenIdData(_tokenIdList[i]).assetNftContractAddress;
+            AssetNFT(dataStorageContractAddress).safeTransferFrom(_willOwner, beneficiary, _tokenIdList[i]);
         }
 
         emit WillExecuted(government);
