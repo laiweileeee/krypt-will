@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract WillFactory is Ownable, CloneFactory {
     Will[] public wills;
     address masterWillContract;
+    address government;
     mapping(address => address) public willOwnerToWillAddress;
 
     event WillCreated(Will newWill);
@@ -22,9 +23,9 @@ contract WillFactory is Ownable, CloneFactory {
         masterWillContract = _masterWillAddress;
     }
 
-    function createWill(address willOwner, address govAdd) onlyOwner external {
+    function createWill(address willOwner) onlyOwner external {
         Will will = Will(createClone(masterWillContract));
-        will.init(willOwner, govAdd);
+        will.init(willOwner, government);
         wills.push(will);
 
         // store will owner => will address mapping

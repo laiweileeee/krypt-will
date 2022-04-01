@@ -1,4 +1,4 @@
-'// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token//ERC721/extensions/ERC721Enumerable.sol";
@@ -35,11 +35,11 @@ contract AssetNFT is ERC721Enumerable, Ownable {
 
         // If there is no base URI, return the token URI.
         if (bytes(base).length == 0) {
-        return _tokenURI;
+            return _tokenURI;
         }
         // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
         if (bytes(_tokenURI).length > 0) {
-        return string(abi.encodePacked(base, _tokenURI));
+            return string(abi.encodePacked(base, _tokenURI));
         }
         // If there is a baseURI but no tokenURI, concatenate the tokenID to the baseURI.
         return string(abi.encodePacked(base, tokenId.toString()));
@@ -50,8 +50,8 @@ contract AssetNFT is ERC721Enumerable, Ownable {
         uint256[] memory tokenIds = new uint[](numTokens);
 
         for(uint i=0; i<numTokens; i++) {
-        uint256 tokenId = tokenOfOwnerByIndex(owner, i);
-        tokenIds[i] = tokenId;
+            uint256 tokenId = tokenOfOwnerByIndex(owner, i);
+            tokenIds[i] = tokenId;
         }
         return tokenIds;
     }

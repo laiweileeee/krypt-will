@@ -45,13 +45,13 @@ contract Will {
         _;
     }
 
-    function createAsset(address _to, uint256 _tokenId, string memory tokenURI_) public onlyWillOwner {
+    function createAsset(address _to, uint256 _tokenId, string memory tokenURI_) private {
         assetNFTContract.mint(_to, _tokenId, tokenURI_);
         assetNFTContract.approve(address(this), _tokenId);
         emit AssetCreated(_willOwner);
     }
 
-    function setAssetAllocation(address _to, AssetData[] memory assetDataList) private {
+    function setAssetAllocation(AssetData[] memory assetDataList) public onlyWillOwner {
 
         for(uint i = 0; i < assetDataList.length; i++) {
             // transfer ownership of assets to this contract, approval of the ERC721 token must be done first
@@ -59,7 +59,7 @@ contract Will {
             
             if (assetNFTContract.ownerOf(asset.tokenId)==address(0)) { // Check if tokenId exist 
                 _tokenIdList.push(asset.tokenId);
-                createAsset(_to, asset.tokenId, asset.tokenURI);
+                createAsset(_willOwner, asset.tokenId, asset.tokenURI);
                 dataStorageContract.setTokenIdData(asset.tokenId, asset.tokenURI, asset.beneficiary);     
             } else if (!dataStorageContract.getTokenIdStatus(asset.tokenId)) {
                 dataStorageContract.toggleTokenIdStatus(asset.tokenId);
@@ -74,7 +74,7 @@ contract Will {
         // send assets to beneficiaries
         for(uint i=0; i < _tokenIdList.length; i++) {
             address beneficiary = dataStorageContract.getTokenIdData(_tokenIdList[i]).beneficiary;
-            assetNFTContract.safeTransferFrom(address(this), beneficiary, _tokenIdList[i]);
+            assetNFTContract.safeTransferFrom(_willOwner, beneficiary, _tokenIdList[i]);
         }
 
         emit WillExecuted(government);
