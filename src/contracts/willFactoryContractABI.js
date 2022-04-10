@@ -3,7 +3,37 @@ export const willFactoryContractABI = [
     inputs: [
       {
         internalType: "address",
+        name: "willOwner",
+        type: "address",
+      },
+    ],
+    name: "createWill",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
         name: "_masterWillAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "govAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "dataStorageContractAddess",
         type: "address",
       },
     ],
@@ -30,6 +60,32 @@ export const willFactoryContractABI = [
     type: "event",
   },
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "_masterWillAddress",
+        type: "address",
+      },
+    ],
+    name: "setMasterWillAddress",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -41,24 +97,6 @@ export const willFactoryContractABI = [
     ],
     name: "WillCreated",
     type: "event",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "willOwner",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "govAdd",
-        type: "address",
-      },
-    ],
-    name: "createWill",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
   },
   {
     inputs: [],
@@ -84,39 +122,6 @@ export const willFactoryContractABI = [
       },
     ],
     stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "renounceOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_masterWillAddress",
-        type: "address",
-      },
-    ],
-    name: "setMasterWillAddress",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "transferOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
     type: "function",
   },
   {

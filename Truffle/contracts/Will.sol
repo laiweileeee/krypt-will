@@ -23,6 +23,7 @@ contract Will {
   event WillCreated(address willOwner);
   event WillDestroyed(address willOwner);
   event WillExecuted(address govAdd);
+  event AssetAllocationSet();
 
   // Note: constructor not needed for factory cloning
 
@@ -54,9 +55,9 @@ contract Will {
   }
 
   function setAssetAllocation(AssetData[] memory assetDataList)
-    public
-    payable
-    onlyWillOwner
+  public
+  payable
+  onlyWillOwner
   {
     for (uint256 i = 0; i < assetDataList.length; i++) {
       // transfer ownership of assets to this contract, approval of the ERC721 token must be done first
@@ -70,8 +71,10 @@ contract Will {
           asset.tokenId,
           asset.beneficiary
         );
+        emit AssetAllocationSet();
       } else if (!dataStorageContract.getTokenIdStatus(asset.tokenId)) {
         dataStorageContract.toggleTokenIdStatus(asset.tokenId);
+        emit AssetAllocationSet();
       } else {
         revert(); // Revert contract since assets are already used in previousl will
       }
@@ -83,11 +86,11 @@ contract Will {
     // send assets to beneficiaries
     for (uint256 i = 0; i < _tokenIdList.length; i++) {
       address beneficiary = dataStorageContract
-        .getTokenIdData(_tokenIdList[i])
-        .beneficiary;
+      .getTokenIdData(_tokenIdList[i])
+      .beneficiary;
       address assetNFTContractAddress = dataStorageContract
-        .getTokenIdData(_tokenIdList[i])
-        .assetNftContractAddress;
+      .getTokenIdData(_tokenIdList[i])
+      .assetNftContractAddress;
       AssetNFT(assetNFTContractAddress).safeTransferFrom(
         _willOwner,
         beneficiary,
@@ -99,9 +102,20 @@ contract Will {
   }
 
   function destroyWill() public onlyWillOwner {
-    // detroy will and send remaining eth to owner
-    selfdestruct(payable(_willOwner));
-
     emit WillDestroyed(_willOwner);
+    // destroy will and send remaining eth to owner
+    selfdestruct(payable(_willOwner));
+  }
+
+  function getDataStorageContract() public view returns (DataStorage) {
+    return dataStorageContract;
+  }
+
+  function getAssetNFTContract() public view returns (AssetNFT) {
+    return assetNFTContract;
+  }
+
+  function getTokenIdList() public view returns (uint256[] memory) {
+    return _tokenIdList;
   }
 }
