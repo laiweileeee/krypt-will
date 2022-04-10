@@ -1,5 +1,6 @@
 import {
   CheckCircleTwoTone,
+  CloseCircleTwoTone,
   DeleteTwoTone,
   FileSearchOutlined,
   NumberOutlined,
@@ -29,6 +30,7 @@ import { blue, green, grey, red, volcano, geekblue } from "@ant-design/colors";
 import { v4 as uuidv4 } from "uuid";
 import { willFactoryContractABI } from "../../../contracts/willFactoryContractABI";
 import Address from "../../Address/Address";
+import { willFactoryAddress } from "../../../config";
 
 const styles = {
   card: {
@@ -69,6 +71,7 @@ const LoadingState = {
   INITIAL: "Initial",
   LOADING: "Loading",
   COMPLETE: "Complete",
+  FAILURE: "Failure",
 };
 
 function CreateAssetsForm() {
@@ -84,7 +87,6 @@ function CreateAssetsForm() {
 
   const [assets, setAssets] = useState([
     {
-      assetId: uuidv4(),
       assetNftContract: "",
       tokenId: undefined,
       beneficiary: "",
@@ -155,7 +157,7 @@ function CreateAssetsForm() {
 
   const fetchWillContractAddress = async () => {
     const fetchWillContractTxMsg = await Moralis.executeFunction({
-      contractAddress: "0x0D17895c11EF2bf60E7E9c70931E63F295d80BCD",
+      contractAddress: willFactoryAddress, // hardcoded will factory contract address
       functionName: "willOwnerToWillAddress",
       abi: willFactoryContractABI,
       params: {
@@ -169,7 +171,6 @@ function CreateAssetsForm() {
 
   const handleAdd = () => {
     const newAsset = {
-      assetId: uuidv4(),
       assetNftContract: "",
       tokenId: undefined,
       beneficiary: "",
@@ -267,45 +268,53 @@ function CreateAssetsForm() {
       // execute function using moralisAPI
       const createAssetsTx = await Moralis.executeFunction({
         contractAddress: willContractAddress,
-        functionName: "createAssets",
+        functionName: "setAssetAllocation",
         abi: willContractABI,
         params: {
-          willAssets: assetsToSubmit,
+          assetDataList: assetsToSubmit,
         },
       });
 
       setLoading(LoadingState.LOADING);
       setTxHash(createAssetsTx.hash);
       console.log("tx hash ", createAssetsTx.hash);
-      await createAssetsTx.wait();
+      const createAssetTxReceipt = await createAssetsTx.wait();
 
-      // TODO: check for WillCreated event instead
-      const createAssetsTxMsg = await Moralis.executeFunction({
-        contractAddress: willContractAddress,
-        functionName: "getAssets",
-        abi: willContractABI,
-      });
+      console.log("transaction receipt: ", createAssetTxReceipt);
+      console.log("event emitted: ", createAssetTxReceipt.events[0]);
 
-      console.log(createAssetsTxMsg);
+      // // get DataStorageContract address
+      // const dataStorageAddress = await Moralis.executeFunction({
+      //   contractAddress: willContractAddress,
+      //   functionName: "dataStorageContract",
+      //   abi: willContractABI,
+      // });
+      //
+      // console.log("data storage address: ", dataStorageAddress);
+      // show success message if event exists
+      if (createAssetTxReceipt.events[0]) {
+        message.success(
+          `Successfully created assets to will: ${truncateEthAddress(
+            willContractAddress,
+          )}!`,
+        );
 
-      message.success(
-        `Successfully created assets to will: ${truncateEthAddress(
-          willContractAddress,
-        )}!`,
-      );
-
-      setLoading(LoadingState.COMPLETE);
+        setLoading(LoadingState.COMPLETE);
+      }
     } catch (error) {
       const errorMsg = new Error(error).toString();
       message.error(errorMsg);
+      setLoading(LoadingState.FAILURE);
       // setLoading(LoadingState.COMPLETE);
     }
   };
 
   return (
     <div style={styles.card}>
-      {loading === LoadingState.LOADING || loading === LoadingState.COMPLETE ? (
-        // show spinner or complete
+      {loading === LoadingState.LOADING ||
+      loading === LoadingState.COMPLETE ||
+      loading === LoadingState.FAILURE ? (
+        // show spinner, complete or failure states
         <div
           style={{
             display: "flex",
@@ -316,6 +325,7 @@ function CreateAssetsForm() {
           }}
         >
           {loading === LoadingState.LOADING ? (
+            // loading
             <div>
               <div style={{ textAlign: "center" }}>Creating Assets...</div>
               <div style={{ textAlign: "center", fontWeight: "normal" }}>
@@ -328,8 +338,18 @@ function CreateAssetsForm() {
                   etherscan
                 </a>
               </div>
+              <div
+                style={{
+                  marginTop: "50px",
+                  marginBottom: "50px",
+                  textAlign: "center",
+                }}
+              >
+                <Spin size="large" />
+              </div>
             </div>
-          ) : (
+          ) : loading === LoadingState.COMPLETE ? (
+            // success
             <div>
               <div style={{ textAlign: "center" }}>Assets Created!</div>
               <div style={{ textAlign: "center", fontWeight: "normal" }}>
@@ -342,18 +362,49 @@ function CreateAssetsForm() {
                   etherscan
                 </a>
               </div>
+              <div
+                style={{
+                  marginTop: "50px",
+                  marginBottom: "50px",
+                  textAlign: "center",
+                }}
+              >
+                <CheckCircleTwoTone
+                  style={{ fontSize: "2.5rem" }}
+                  twoToneColor={blue[2]}
+                />
+              </div>
+            </div>
+          ) : (
+            //failure
+            <div>
+              <div style={{ textAlign: "center" }}>
+                Failed to create assets!
+              </div>
+              <div style={{ textAlign: "center", fontWeight: "normal" }}>
+                View will <NavLink to={"/view"}>here</NavLink> or on{" "}
+                <a
+                  href={`https://rinkeby.etherscan.io/address/${willContractAddress}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  etherscan
+                </a>
+              </div>
+              <div
+                style={{
+                  marginTop: "50px",
+                  marginBottom: "50px",
+                  textAlign: "center",
+                }}
+              >
+                <CloseCircleTwoTone
+                  style={{ fontSize: "2.5rem" }}
+                  twoToneColor={red[2]}
+                />
+              </div>
             </div>
           )}
-          <div style={{ marginTop: "50px", marginBottom: "50px" }}>
-            {loading === LoadingState.LOADING ? (
-              <Spin size="large" />
-            ) : (
-              <CheckCircleTwoTone
-                style={{ fontSize: "2.5rem" }}
-                twoToneColor={blue[2]}
-              />
-            )}
-          </div>
         </div>
       ) : (
         //  show create will form

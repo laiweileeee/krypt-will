@@ -28,6 +28,7 @@ import { assetNftContractABI } from "../../../contracts/assetNftContracABI";
 import { blue, geekblue, red } from "@ant-design/colors";
 import _ from "lodash";
 import { NavLink } from "react-router-dom";
+import { willFactoryAddress } from "../../../config";
 
 const styles = {
   card: {
@@ -73,7 +74,7 @@ const LoadingState = {
 };
 
 // TODO: Find will contract address from user
-const willFactoryContract = "0x0D17895c11EF2bf60E7E9c70931E63F295d80BCD";
+const willFactoryContract = willFactoryAddress;
 
 function ViewAssetsForm() {
   const { Moralis, isAuthenticated, account } = useMoralis();

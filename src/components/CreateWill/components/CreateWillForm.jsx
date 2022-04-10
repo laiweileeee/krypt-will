@@ -9,6 +9,7 @@ import React, { useEffect, useState } from "react";
 import { useMoralis } from "react-moralis";
 import { truncateEthAddress } from "../../../utils/TruffleEthAddress";
 import { willFactoryContractABI } from "../../../contracts/willFactoryContractABI";
+import { willFactoryAddress } from "../../../config";
 
 const styles = {
   card: {
@@ -44,8 +45,6 @@ const styles = {
     flexDirection: "row",
   },
 };
-
-const willFactoryAddress = "0x0D17895c11EF2bf60E7E9c70931E63F295d80BCD";
 
 function CreateWillForm() {
   const { Moralis, account, isAuthenticated } = useMoralis();
