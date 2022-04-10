@@ -283,14 +283,6 @@ function CreateAssetsForm() {
       console.log("transaction receipt: ", createAssetTxReceipt);
       console.log("event emitted: ", createAssetTxReceipt.events[0]);
 
-      // // get DataStorageContract address
-      // const dataStorageAddress = await Moralis.executeFunction({
-      //   contractAddress: willContractAddress,
-      //   functionName: "dataStorageContract",
-      //   abi: willContractABI,
-      // });
-      //
-      // console.log("data storage address: ", dataStorageAddress);
       // show success message if event exists
       if (createAssetTxReceipt.events[0]) {
         message.success(
@@ -300,6 +292,8 @@ function CreateAssetsForm() {
         );
 
         setLoading(LoadingState.COMPLETE);
+      } else {
+        setLoading(LoadingState.FAILURE);
       }
     } catch (error) {
       const errorMsg = new Error(error).toString();

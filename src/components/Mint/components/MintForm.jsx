@@ -75,8 +75,8 @@ function MintForm() {
   // List of deployed asset contracts and their names
   const assets = {
     House: "0xC664eaE6BC7b797Df98DC29a0575C3ECC1234a6A", // AssetNFT contract already deployed on Rinkeby Testnet.
-    Car: "won't work",
-    ExampleDeed: "won't work",
+    Car: "Not deployed",
+    ExampleDeed: "Not deployed",
   };
 
   // takes in array of asset contracts, gets all this info

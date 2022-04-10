@@ -61,33 +61,19 @@ function ExecuteWillForm() {
       setLoading(true);
 
       // Wait until the transaction is confirmed
-      await executeWillTx.wait();
+      const txReceipt = await executeWillTx.wait();
 
-      // Check if will is still active
-      const executeWillTxMsg1 = await Moralis.executeFunction({
-        contractAddress: willContractAdd,
-        functionName: "isActive",
-        abi: willContractABI,
-      });
+      console.log("transaction receipt: ", txReceipt);
+      console.log("event emitted: ", txReceipt.events[0]);
 
-      // Check that isActive value is now false
-      console.log(executeWillTxMsg1);
-      if (executeWillTxMsg1) {
-        message.error("Failed to change isActive to false state in contract");
+      // show success message if event exists
+      if (txReceipt.events[0]) {
+        message.success(
+          `Successfully executed will at address ${willContractAdd}!!`,
+        );
+        setWillContractAdd(undefined);
+        setLoading(false);
       }
-
-      // Read new value
-      const executeWillTxMsg2 = await Moralis.executeFunction({
-        contractAddress: willContractAdd,
-        functionName: "willOwner",
-        abi: willContractABI,
-      });
-
-      message.success(
-        `Successfully executed will at address ${executeWillTxMsg2}!!`,
-      );
-      setWillContractAdd(undefined);
-      setLoading(false);
     } catch (error) {
       const errorMsg = new Error(error).toString();
       message.error(errorMsg);

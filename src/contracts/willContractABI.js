@@ -1,5 +1,11 @@
 export const willContractABI = [
   {
+    anonymous: false,
+    inputs: [],
+    name: "AssetAllocationSet",
+    type: "event",
+  },
+  {
     inputs: [],
     name: "destroyWill",
     outputs: [],
@@ -104,6 +110,45 @@ export const willContractABI = [
     ],
     name: "WillExecuted",
     type: "event",
+  },
+  {
+    inputs: [],
+    name: "getAssetNFTContract",
+    outputs: [
+      {
+        internalType: "contract AssetNFT",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getDataStorageContract",
+    outputs: [
+      {
+        internalType: "contract DataStorage",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getTokenIdList",
+    outputs: [
+      {
+        internalType: "uint256[]",
+        name: "",
+        type: "uint256[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [],
