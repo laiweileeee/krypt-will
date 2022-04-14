@@ -91,6 +91,7 @@ contract Will {
       address assetNFTContractAddress = dataStorageContract
       .getTokenIdData(_tokenIdList[i])
       .assetNftContractAddress;
+      require(AssetNFT(assetNFTContractAddress).ownerOf(_tokenIdList[i]) == willOwnerAddress, "Will Owner no longer owns NFT");
       AssetNFT(assetNFTContractAddress).safeTransferFrom(
         _willOwner,
         beneficiary,
