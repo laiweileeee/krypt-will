@@ -4,8 +4,6 @@ Immutable & Trusted Digital Will Platform
 
 This project is built using [react-moralis](https://github.com/MoralisWeb3/react-moralis) and [Moralis](https://moralis.io?utm_source=github&utm_medium=readme&utm_campaign=ethereum-boilerplate).
 
-Please check the [official documentation of Moralis](https://docs.moralis.io/#user) for all the functionalities of Moralis.
-
 <br/>
 
 ## Contracts (Stored in './Truffle/contracts')
@@ -17,20 +15,20 @@ Please check the [official documentation of Moralis](https://docs.moralis.io/#us
 - From https://github.com/optionality/clone-factory/blob/master/contracts/CloneFactory.sol
 - [x] AssetNFT.sol - handles asset NFT functionality
 - From https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC721/extensions/ERC721Enumerable.sol
+- [x] DataStorage.sol - handles storage of asset data in a will
 - Read more https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Enumerable
 
-![alt text](https://github.com/laiweileeee/kryptwill/blob/main/Contracts.png)
+![alt text]()
 
 <br/>
 
 ## Front-End Pages
 
 - [x] Create Will Page - For will owners to create will
-- [x] View Will Page - For will owners to view their will (Can delete, Cannot add more assets yet)
+- [x] View Will Page - For will owners to view and/or destroy their will 
 - [x] Mint Page - For Gov to mint NFTs to will owners
 - [x] Execute Will Page - For Gov to simulate will owners' death and execute will
-
-Note: I'm not sure how complex it should be but these are the base functionality needed, can extend more after
+- [x] View Asset Page - For any account to view their NFT assets
 
 <br/>
 
