@@ -3,10 +3,9 @@
 Immutable & Trusted Digital Will Platform
 
 This project is built using [react-moralis](https://github.com/MoralisWeb3/react-moralis) and [Moralis](https://moralis.io?utm_source=github&utm_medium=readme&utm_campaign=ethereum-boilerplate).
-
 <br/>
 
-## Contracts (Stored in './Truffle/contracts')
+## Contracts (Stored [here](https://github.com/laiweileeee/krypt-will/Truffle/contracts))
 
 - [x] Will.sol - handles will contract functionalities (some functions not done, haven't thought about how to encrypt will details)
 - [x] WillFactory.sol - handles creating clones of Will contracts
@@ -18,7 +17,7 @@ This project is built using [react-moralis](https://github.com/MoralisWeb3/react
 - [x] DataStorage.sol - handles storage of asset data in a will
 - Read more https://docs.openzeppelin.com/contracts/4.x/api/token/erc721#ERC721Enumerable
 
-![alt text]()
+![alt text](https://github.com/laiweileeee/krypt-will/blob/main/Contract%20UML.png)
 
 <br/>
 
