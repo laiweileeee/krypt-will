@@ -29,6 +29,8 @@ This project is built using [react-moralis](https://github.com/MoralisWeb3/react
 - [x] Execute Will Page - For Gov to simulate will owners' death and execute will
 - [x] View Asset Page - For any account to view their NFT assets
 
+![alt text](https://github.com/laiweileeee/krypt-will/blob/main/UI%20Screenshot.png)
+
 <br/>
 
 ## Architecture
